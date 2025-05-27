@@ -36,7 +36,6 @@ class Network: UIViewController {
         
         if ReachabilityManager.shared.isNetworkAvailable {
             AF.request(url,method: methodType, parameters: params,encoding: encoding!, headers: headers).responseData (completionHandler: { response in
-                print(response.debugDescription)
                 
                 switch response.result {
                 case .success(let res):
