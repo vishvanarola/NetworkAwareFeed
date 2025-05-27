@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1841C9652DE58D080042FA9C /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 1841C9642DE58D080042FA9C /* Alamofire */; };
+		1841C96A2DE58DAB0042FA9C /* Reachability in Frameworks */ = {isa = PBXBuildFile; productRef = 1841C9692DE58DAB0042FA9C /* Reachability */; };
+		1841C96D2DE58DD50042FA9C /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = 1841C96C2DE58DD50042FA9C /* NVActivityIndicatorView */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		1841C90F2DE5835E0042FA9C /* NetworkAwareFeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NetworkAwareFeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +42,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1841C9652DE58D080042FA9C /* Alamofire in Frameworks */,
+				1841C96A2DE58DAB0042FA9C /* Reachability in Frameworks */,
+				1841C96D2DE58DD50042FA9C /* NVActivityIndicatorView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +87,9 @@
 			);
 			name = NetworkAwareFeed;
 			packageProductDependencies = (
+				1841C9642DE58D080042FA9C /* Alamofire */,
+				1841C9692DE58DAB0042FA9C /* Reachability */,
+				1841C96C2DE58DD50042FA9C /* NVActivityIndicatorView */,
 			);
 			productName = NetworkAwareFeed;
 			productReference = 1841C90F2DE5835E0042FA9C /* NetworkAwareFeed.app */;
@@ -107,6 +119,11 @@
 			);
 			mainGroup = 1841C9062DE5835E0042FA9C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1841C9632DE58D080042FA9C /* XCRemoteSwiftPackageReference "Alamofire" */,
+				1841C9682DE58DAB0042FA9C /* XCRemoteSwiftPackageReference "Reachability" */,
+				1841C96B2DE58DD50042FA9C /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1841C9102DE5835E0042FA9C /* Products */;
 			projectDirPath = "";
@@ -341,6 +358,51 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1841C9632DE58D080042FA9C /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
+		1841C9682DE58DAB0042FA9C /* XCRemoteSwiftPackageReference "Reachability" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ashleymills/Reachability.swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		1841C96B2DE58DD50042FA9C /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ninjaprox/NVActivityIndicatorView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1841C9642DE58D080042FA9C /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1841C9632DE58D080042FA9C /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		1841C9692DE58DAB0042FA9C /* Reachability */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1841C9682DE58DAB0042FA9C /* XCRemoteSwiftPackageReference "Reachability" */;
+			productName = Reachability;
+		};
+		1841C96C2DE58DD50042FA9C /* NVActivityIndicatorView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1841C96B2DE58DD50042FA9C /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
+			productName = NVActivityIndicatorView;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1841C9072DE5835E0042FA9C /* Project object */;
 }
