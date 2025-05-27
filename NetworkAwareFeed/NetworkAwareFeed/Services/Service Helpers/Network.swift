@@ -8,8 +8,14 @@
 import UIKit
 import Alamofire
 
-enum ParamVariables {
-    //Used in API Method Types
+// MARK: - Constants
+
+struct APIConstants {
+    static let baseURL = "https://dummyjson.com"
+    static let beautyProductsEndpoint = "/products"
+}
+
+struct ParamVariables {
     static let get = "GET"
     static let post = "POST"
     static let put = "PUT"
@@ -17,67 +23,70 @@ enum ParamVariables {
     static let delete = "DELETE"
 }
 
-class Network: UIViewController {
-    var window: UIWindow?
+// MARK: - Network Manager
+
+class NetworkManager {
+    static let shared = NetworkManager()
     
-    func apiCall(url: String, methodTypeString: String, params: [String:AnyObject], headers: HTTPHeaders?, success: @escaping (_ parsedJSON: Data) -> Void, failed: @escaping (_ errorMsg: String) -> Void) {
+    private init() {}
+    
+    func apiCall(url: String,
+                 method: String,
+                 params: [String: AnyObject],
+                 headers: HTTPHeaders?,
+                 success: @escaping (Data) -> Void,
+                 failure: @escaping (String) -> Void) {
         
-        let methodType = HTTPMethod(rawValue: methodTypeString)
-        var encoding : ParameterEncoding?
-        
-        
-        if (methodTypeString == ParamVariables.get) {
-            encoding = URLEncoding.default as URLEncoding?
-        } else if (methodTypeString == ParamVariables.put) {
-            encoding = URLEncoding.default
-        } else {
-            encoding = JSONEncoding.default as JSONEncoding?
+        guard ReachabilityManager.shared.isNetworkAvailable else {
+            AlertPresenter.shared.presentNoInternetAlert()
+            return
         }
         
-        if ReachabilityManager.shared.isNetworkAvailable {
-            AF.request(url,method: methodType, parameters: params,encoding: encoding!, headers: headers).responseData (completionHandler: { response in
-                
-                switch response.result {
-                case .success(let res):
-                    if let code = response.response?.statusCode {
-                        switch code {
-                        case 200...299:
-                            success(res)
-                        default:
-                            failed(response.debugDescription)
-                        }
-                    }
-                case .failure(let error):
-                    failed(error.errorDescription ?? "")
+        let httpMethod = HTTPMethod(rawValue: method)
+        let encoding: ParameterEncoding = (method == ParamVariables.get || method == ParamVariables.put) ? URLEncoding.default : JSONEncoding.default
+        
+        AF.request(url,
+                   method: httpMethod,
+                   parameters: params,
+                   encoding: encoding,
+                   headers: headers)
+        .responseData { response in
+            switch response.result {
+            case .success(let data):
+                if let statusCode = response.response?.statusCode, (200...299).contains(statusCode) {
+                    success(data)
+                } else {
+                    failure("Server error with code: \(response.debugDescription)")
                 }
-            })
-        } else {
-            presentAlert()
+            case .failure(let error):
+                failure(error.localizedDescription)
+            }
         }
     }
+}
+
+// MARK: - Alert Presenter
+
+class AlertPresenter {
+    static let shared = AlertPresenter()
     
-    func presentAlert() {
-        activityIndicator.stopAnimating()
+    private init() {}
+    
+    func presentNoInternetAlert() {
+        let alert = UIAlertController(title: TextMessage.alert, message: TextMessage.pleaseCheckInternet, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
         
-        let alertController = UIAlertController(title: TextMessage.alert, message: TextMessage.pleaseCheckInternet, preferredStyle: .alert)
-        
-        if let windowScene = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
-           let window = windowScene.windows.first(where: { $0.isKeyWindow }),
-           var rootViewController = window.rootViewController {
+        if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+           let rootVC = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController {
             
-            if let navigationController = rootViewController as? UINavigationController {
-                rootViewController = navigationController.viewControllers.first ?? navigationController
+            var topController = rootVC
+            while let presented = topController.presentedViewController {
+                topController = presented
             }
             
-            if let tabBarController = rootViewController as? UITabBarController {
-                rootViewController = tabBarController.selectedViewController ?? tabBarController
+            DispatchQueue.main.async {
+                topController.present(alert, animated: true)
             }
-            
-            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-            alertController.addAction(okAction)
-            
-            rootViewController.present(alertController, animated: true, completion: nil)
         }
     }
 }

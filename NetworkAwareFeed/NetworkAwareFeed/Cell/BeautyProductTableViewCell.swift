@@ -15,7 +15,7 @@ class BeautyProductTableViewCell: UITableViewCell {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var descLabel: UILabel!
     
-    //MARK: - Declaration
+    //MARK: - Properties
     static let identifier = "BeautyProductTableViewCell"
     
     //MARK: - Life cycle

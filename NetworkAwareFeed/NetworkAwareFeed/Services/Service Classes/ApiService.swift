@@ -7,23 +7,32 @@
 
 import Foundation
 
-class ApiService {
-    
-    func beautyProductListApiCall(success : @escaping (BeautyProductModel) -> Void, failure :@escaping (String) -> Void) {
-                
-        Network().apiCall(url: "https://dummyjson.com/products", methodTypeString: ParamVariables.get, params: [:], headers: [:], success: {response in
-            do {
-                let jsonDecoder = JSONDecoder()
-                let responseModel = try jsonDecoder.decode(BeautyProductModel.self, from: response)
-                success(responseModel)
+// MARK: - API Service Protocol
 
-            } catch let error {
-                print(error)
-                failure(TextMessage.somethingIsWrong)
+protocol BeautyProductServiceProtocol {
+    func fetchBeautyProducts(completion: @escaping (Result<[BeautyProducts], Error>) -> Void)
+}
+
+// MARK: - API Service
+
+class BeautyProductService: BeautyProductServiceProtocol {
+    func fetchBeautyProducts(completion: @escaping (Result<[BeautyProducts], Error>) -> Void) {
+        let url = APIConstants.baseURL + APIConstants.beautyProductsEndpoint
+        
+        NetworkManager.shared.apiCall(url: url,
+                                      method: ParamVariables.get,
+                                      params: [:],
+                                      headers: nil,
+                                      success: { data in
+            do {
+                let decoded = try JSONDecoder().decode(BeautyProductModel.self, from: data)
+                completion(.success(decoded.products ?? []))
+            } catch {
+                completion(.failure(error))
             }
-            
-        }, failed: {error in
-            failure(error)
+        },
+                                      failure: { errorString in
+            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: errorString])))
         })
     }
 }
