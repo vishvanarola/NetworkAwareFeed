@@ -8,14 +8,14 @@
 class BeautyProductsListViewModel {
     private let service: BeautyProductServiceProtocol
     private(set) var products: [BeautyProducts] = []
-
+    
     var onProductsFetched: (() -> Void)?
     var onError: ((Error) -> Void)?
-
+    
     init(service: BeautyProductServiceProtocol = BeautyProductService()) {
         self.service = service
     }
-
+    
     func fetchProducts() {
         service.fetchBeautyProducts { [weak self] result in
             switch result {
@@ -27,11 +27,11 @@ class BeautyProductsListViewModel {
             }
         }
     }
-
+    
     func product(at index: Int) -> BeautyProducts {
         return products[index]
     }
-
+    
     var numberOfProducts: Int {
         return products.count
     }

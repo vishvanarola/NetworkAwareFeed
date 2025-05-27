@@ -9,7 +9,7 @@ import UIKit
 
 class BeautyProductsListViewController: UIViewController {
     
-    //MARK: - Outlet
+    //MARK: - IBOutlets
     @IBOutlet weak var listTableView: UITableView!
     
     // MARK: - Properties
@@ -28,8 +28,10 @@ class BeautyProductsListViewController: UIViewController {
         self.listTableView.backgroundColor = .clear
         self.listTableView.delegate = self
         self.listTableView.dataSource = self
+        self.listTableView.separatorStyle = .none
+        self.listTableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0)
         self.listTableView.register(UINib(nibName: BeautyProductTableViewCell.identifier, bundle: nil),
-                               forCellReuseIdentifier: BeautyProductTableViewCell.identifier)
+                                    forCellReuseIdentifier: BeautyProductTableViewCell.identifier)
     }
     
     private func bindViewModel() {
@@ -47,22 +49,28 @@ class BeautyProductsListViewController: UIViewController {
 
 //MARK: - Table View Delegate & Data Source
 extension BeautyProductsListViewController: UITableViewDataSource, UITableViewDelegate {
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numberOfProducts
+        return self.viewModel.numberOfProducts
     }
-
+    
     func tableView(_ tableView: UITableView,
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: BeautyProductTableViewCell.identifier, for: indexPath) as? BeautyProductTableViewCell else {
             return UITableViewCell()
         }
-
-        let product = viewModel.product(at: indexPath.row)
+        
+        let product = self.viewModel.product(at: indexPath.row)
         cell.setUpData(img: product.thumbnail ?? "",
                        title: product.title ?? "",
-                       desc: product.description ?? "")
-
+                       price: "$\(product.price ?? 0.0)")
+        
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let nav: ProductDetailsViewController = UIStoryboard(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "ProductDetailsViewController") as? ProductDetailsViewController else { return }
+        nav.beautyProductDetails = self.viewModel.product(at: indexPath.row)
+        self.navigationController?.pushViewController(nav, animated: true)
     }
 }
