@@ -35,4 +35,8 @@ class BeautyProductsListViewModel {
     var numberOfProducts: Int {
         return products.count
     }
+    
+    func setLocalProducts(_ products: [BeautyProducts]) {
+        self.products = products
+    }
 }

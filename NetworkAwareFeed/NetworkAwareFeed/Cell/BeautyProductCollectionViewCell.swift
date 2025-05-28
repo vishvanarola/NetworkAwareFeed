@@ -22,8 +22,12 @@ class BeautyProductCollectionViewCell: UICollectionViewCell {
     }
     
     //MARK: - Set up Data
-    func setUpData(img: String) {
+    func setUpData(imgUrl: String) {
         self.imgView.sd_imageIndicator = SDWebImageActivityIndicator.gray
-        self.imgView.sd_setImage(with: URL(string: img), placeholderImage: UIImage(), options: .refreshCached)
+        self.imgView.sd_setImage(
+            with: URL(string: imgUrl),
+            placeholderImage: UIImage(systemName: "photo.fill"),
+            options: ReachabilityManager.shared.isNetworkAvailable ? [.refreshCached] : [.fromCacheOnly]
+        )
     }
 }

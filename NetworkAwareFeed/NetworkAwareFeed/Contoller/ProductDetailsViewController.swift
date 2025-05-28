@@ -97,7 +97,7 @@ extension ProductDetailsViewController: UICollectionViewDelegate, UICollectionVi
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = self.listCollectionView.dequeueReusableCell(withReuseIdentifier: BeautyProductCollectionViewCell.identifier, for: indexPath) as! BeautyProductCollectionViewCell
-        cell.setUpData(img: self.beautyProductDetails?.images?[indexPath.row] ?? "")
+        cell.setUpData(imgUrl: self.beautyProductDetails?.images?[indexPath.row] ?? "")
         return cell
     }
     

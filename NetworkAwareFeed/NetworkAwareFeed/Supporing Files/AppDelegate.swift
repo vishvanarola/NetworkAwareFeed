@@ -7,12 +7,14 @@
 
 import UIKit
 import CoreData
+import SDWebImage
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         ReachabilityManager.shared.startMonitoring()
+        SDImageCache.shared.config.shouldCacheImagesInMemory = true
         return true
     }
     

@@ -19,8 +19,7 @@ class BeautyProductsListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.configureTableView()
-        self.bindViewModel()
-        self.viewModel.fetchProducts()
+        self.initializeProductData()
     }
     
     // MARK: - Setup Methods
@@ -36,13 +35,30 @@ class BeautyProductsListViewController: UIViewController {
     
     private func bindViewModel() {
         self.viewModel.onProductsFetched = { [weak self] in
+            self?.listTableView.reloadData()
             DispatchQueue.main.async {
-                self?.listTableView.reloadData()
+                if BeautyProductDataManager().retrieveData().isEmpty {
+                    BeautyProductDataManager().createData(self?.viewModel.products ?? [BeautyProducts]())
+                } else {
+                    BeautyProductDataManager().updateData(self?.viewModel.products ?? [BeautyProducts]())
+                }
             }
         }
         
         self.viewModel.onError = { error in
             print("❌ Error: \(error.localizedDescription)")
+        }
+    }
+    
+    private func initializeProductData() {
+        if ReachabilityManager.shared.isNetworkAvailable {
+            self.bindViewModel()
+            self.viewModel.fetchProducts()
+        } else {
+            self.viewModel.setLocalProducts(BeautyProductDataManager().retrieveData())
+            DispatchQueue.main.async {
+                self.listTableView.reloadData()
+            }
         }
     }
 }
@@ -61,7 +77,7 @@ extension BeautyProductsListViewController: UITableViewDataSource, UITableViewDe
         }
         
         let product = self.viewModel.product(at: indexPath.row)
-        cell.setUpData(img: product.thumbnail ?? "",
+        cell.setUpData(imgUrl: product.thumbnail ?? "",
                        title: product.title ?? "",
                        price: "$\(product.price ?? 0.0)")
         

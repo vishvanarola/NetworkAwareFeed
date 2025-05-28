@@ -31,48 +31,29 @@ struct BeautyProductModel : Codable {
     
 }
 
-struct BeautyProducts : Codable {
-    let id : Int?
-    let title : String?
-    let description : String?
-    let category : String?
-    let price : Double?
-    let discountPercentage : Double?
-    let rating : Double?
-    let stock : Int?
-    let tags : [String]?
-    let brand : String?
-    let sku : String?
-    let weight : Int?
-    let warrantyInformation : String?
-    let shippingInformation : String?
-    let availabilityStatus : String?
-    let returnPolicy : String?
-    let minimumOrderQuantity : Int?
-    let images : [String]?
-    let thumbnail : String?
+struct BeautyProducts: Codable {
+    let id: Int?
+    let title: String?
+    let description: String?
+    let category: String?
+    let price: Double?
+    let discountPercentage: Double?
+    let rating: Double?
+    let stock: Int?
+    let tags: [String]?
+    let brand: String?
+    let sku: String?
+    let weight: Int?
+    let warrantyInformation: String?
+    let shippingInformation: String?
+    let availabilityStatus: String?
+    let returnPolicy: String?
+    let minimumOrderQuantity: Int?
+    let images: [String]?
+    let thumbnail: String?
     
     enum CodingKeys: String, CodingKey {
-        
-        case id = "id"
-        case title = "title"
-        case description = "description"
-        case category = "category"
-        case price = "price"
-        case discountPercentage = "discountPercentage"
-        case rating = "rating"
-        case stock = "stock"
-        case tags = "tags"
-        case brand = "brand"
-        case sku = "sku"
-        case weight = "weight"
-        case warrantyInformation = "warrantyInformation"
-        case shippingInformation = "shippingInformation"
-        case availabilityStatus = "availabilityStatus"
-        case returnPolicy = "returnPolicy"
-        case minimumOrderQuantity = "minimumOrderQuantity"
-        case images = "images"
-        case thumbnail = "thumbnail"
+        case id, title, description, category, price, discountPercentage, rating, stock, tags, brand, sku, weight, warrantyInformation, shippingInformation, availabilityStatus, returnPolicy, minimumOrderQuantity, images, thumbnail
     }
     
     init(from decoder: Decoder) throws {
@@ -98,4 +79,46 @@ struct BeautyProducts : Codable {
         thumbnail = try values.decodeIfPresent(String.self, forKey: .thumbnail)
     }
     
+    // ✅ Manual initializer for Core Data mapping
+    init(
+        id: Int?,
+        title: String?,
+        description: String?,
+        category: String?,
+        price: Double?,
+        discountPercentage: Double?,
+        rating: Double?,
+        stock: Int?,
+        tags: [String]?,
+        brand: String?,
+        sku: String?,
+        weight: Int?,
+        warrantyInformation: String?,
+        shippingInformation: String?,
+        availabilityStatus: String?,
+        returnPolicy: String?,
+        minimumOrderQuantity: Int?,
+        images: [String]?,
+        thumbnail: String?
+    ) {
+        self.id = id
+        self.title = title
+        self.description = description
+        self.category = category
+        self.price = price
+        self.discountPercentage = discountPercentage
+        self.rating = rating
+        self.stock = stock
+        self.tags = tags
+        self.brand = brand
+        self.sku = sku
+        self.weight = weight
+        self.warrantyInformation = warrantyInformation
+        self.shippingInformation = shippingInformation
+        self.availabilityStatus = availabilityStatus
+        self.returnPolicy = returnPolicy
+        self.minimumOrderQuantity = minimumOrderQuantity
+        self.images = images
+        self.thumbnail = thumbnail
+    }
 }

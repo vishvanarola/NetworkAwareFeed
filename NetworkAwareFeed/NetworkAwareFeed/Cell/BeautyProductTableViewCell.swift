@@ -36,9 +36,13 @@ class BeautyProductTableViewCell: UITableViewCell {
     }
     
     //MARK: - Set up Data
-    func setUpData(img: String, title: String, price: String) {
+    func setUpData(imgUrl: String, title: String, price: String) {
         self.imgView.sd_imageIndicator = SDWebImageActivityIndicator.gray
-        self.imgView.sd_setImage(with: URL(string: img), placeholderImage: UIImage(systemName: "photo.fill"), options: .refreshCached)
+        self.imgView.sd_setImage(
+            with: URL(string: imgUrl),
+            placeholderImage: UIImage(systemName: "photo.fill"),
+            options: ReachabilityManager.shared.isNetworkAvailable ? [.refreshCached] : [.fromCacheOnly]
+        )
         self.titleLabel.text = title
         self.priceLabel.text = price
     }
