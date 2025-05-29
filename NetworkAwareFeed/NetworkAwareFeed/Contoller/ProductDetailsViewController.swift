@@ -22,17 +22,19 @@ class ProductDetailsViewController: UIViewController {
     @IBOutlet weak var availabilityLabel: UILabel!
     @IBOutlet weak var minOrderLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
-    
     @IBOutlet weak var weightLabel: UILabel!
     @IBOutlet weak var ratingLabel: UILabel!
     @IBOutlet weak var warrantyLabel: UILabel!
     @IBOutlet weak var shippingLabel: UILabel!
     @IBOutlet weak var returnsLabel: UILabel!
     @IBOutlet weak var tagsLabel: UILabel!
+    @IBOutlet weak var addToCartButton: UIButton!
+    @IBOutlet weak var buyNowButton: UIButton!
     
     // MARK: - Properties
     var beautyProductDetails: BeautyProducts?
     private lazy var scrollViewGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleCollectionViewTap))
+    private let cartManager = CartManager.shared
     
     //MARK: - Life cycle
     override func viewDidLoad() {
@@ -40,6 +42,7 @@ class ProductDetailsViewController: UIViewController {
         setupUI()
         configureCollectionView()
         configureProductData()
+        setupCartButtons()
     }
     
     // MARK: - UI Setup
@@ -48,7 +51,6 @@ class ProductDetailsViewController: UIViewController {
         view.backgroundColor = .systemBackground
         
         // Style the header
-        headingLabel.font = UIFont.systemFont(ofSize: 24, weight: .bold)
         headingLabel.textColor = .label
         
         // Configure page control
@@ -91,6 +93,23 @@ class ProductDetailsViewController: UIViewController {
         
         // Add tap gesture to collection view
         listCollectionView.addGestureRecognizer(scrollViewGestureRecognizer)
+                
+        addToCartButton.layer.cornerRadius = 12
+        buyNowButton.layer.cornerRadius = 12
+    }
+    
+    private func setupCartButtons() {
+        // Update buttons state based on stock availability
+        let isOutOfStock = beautyProductDetails?.stock == 0
+        addToCartButton.isEnabled = !isOutOfStock
+        buyNowButton.isEnabled = !isOutOfStock
+        
+        if isOutOfStock {
+            addToCartButton.backgroundColor = .systemGray3
+            buyNowButton.backgroundColor = .systemGray3
+            addToCartButton.setTitle("Out of Stock", for: .disabled)
+            buyNowButton.setTitle("Out of Stock", for: .disabled)
+        }
     }
     
     // MARK: - UI Configuration
@@ -287,6 +306,73 @@ class ProductDetailsViewController: UIViewController {
                 }
             })
         }
+    }
+    
+    @IBAction private func addToCartTapped() {
+        guard let product = beautyProductDetails else { return }
+        
+        // Add haptic feedback
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+        
+        // Show quantity selector
+        let alert = UIAlertController(
+            title: "Select Quantity",
+            message: "How many items would you like to add to cart?",
+            preferredStyle: .alert
+        )
+        
+        alert.addTextField { textField in
+            textField.keyboardType = .numberPad
+            textField.text = "1"
+        }
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Add to Cart", style: .default) { [weak self] _ in
+            guard let quantity = Int(alert.textFields?.first?.text ?? "1") else { return }
+            self?.cartManager.addToCart(product: product, quantity: quantity)
+            
+            // Show success message
+            let successAlert = UIAlertController(
+                title: "Added to Cart",
+                message: "\(quantity) item(s) added to your cart",
+                preferredStyle: .alert
+            )
+            successAlert.addAction(UIAlertAction(title: "Continue Shopping", style: .default))
+            successAlert.addAction(UIAlertAction(title: "View Cart", style: .default) { [weak self] _ in
+                self?.showCart()
+            })
+            self?.present(successAlert, animated: true)
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    @IBAction private func buyNowTapped() {
+        guard let product = beautyProductDetails else { return }
+        
+        // Add haptic feedback
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+        
+        // Clear cart and add this item
+        cartManager.clearCart()
+        cartManager.addToCart(product: product)
+        
+        // Show cart/checkout screen
+        showCart()
+    }
+    
+    @IBAction private func cartButtonTapped() {
+        showCart()
+    }
+    
+    private func showCart() {
+        guard let cartVC = UIStoryboard(name: "Main", bundle: nil)
+            .instantiateViewController(withIdentifier: "CartViewController") as? CartViewController else {
+            return
+        }
+        navigationController?.pushViewController(cartVC, animated: true)
     }
 }
 

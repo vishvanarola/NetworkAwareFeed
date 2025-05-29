@@ -282,6 +282,19 @@ class BeautyProductsListViewController: UIViewController {
             }
         }
     }
+    
+    // MARK: - Actions
+    @IBAction private func cartButtonTapped() {
+        showCart()
+    }
+    
+    private func showCart() {
+        guard let cartVC = UIStoryboard(name: "Main", bundle: nil)
+            .instantiateViewController(withIdentifier: "CartViewController") as? CartViewController else {
+            return
+        }
+        navigationController?.pushViewController(cartVC, animated: true)
+    }
 }
 
 //MARK: - Table View Delegate & Data Source
