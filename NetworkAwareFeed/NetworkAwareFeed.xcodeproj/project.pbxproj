@@ -10,7 +10,6 @@
 		1841C9652DE58D080042FA9C /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 1841C9642DE58D080042FA9C /* Alamofire */; };
 		1841C96A2DE58DAB0042FA9C /* Reachability in Frameworks */ = {isa = PBXBuildFile; productRef = 1841C9692DE58DAB0042FA9C /* Reachability */; };
 		1841C96D2DE58DD50042FA9C /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = 1841C96C2DE58DD50042FA9C /* NVActivityIndicatorView */; };
-		1872245E2DE6F44A005B84D4 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 1872245D2DE6F44A005B84D4 /* Kingfisher */; };
 		189E2C0F2DE5B0BD00FE4F76 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 189E2C0E2DE5B0BD00FE4F76 /* SDWebImage */; };
 /* End PBXBuildFile section */
 
@@ -48,7 +47,6 @@
 				1841C96A2DE58DAB0042FA9C /* Reachability in Frameworks */,
 				189E2C0F2DE5B0BD00FE4F76 /* SDWebImage in Frameworks */,
 				1841C96D2DE58DD50042FA9C /* NVActivityIndicatorView in Frameworks */,
-				1872245E2DE6F44A005B84D4 /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,7 +93,6 @@
 				1841C9692DE58DAB0042FA9C /* Reachability */,
 				1841C96C2DE58DD50042FA9C /* NVActivityIndicatorView */,
 				189E2C0E2DE5B0BD00FE4F76 /* SDWebImage */,
-				1872245D2DE6F44A005B84D4 /* Kingfisher */,
 			);
 			productName = NetworkAwareFeed;
 			productReference = 1841C90F2DE5835E0042FA9C /* NetworkAwareFeed.app */;
@@ -130,7 +127,6 @@
 				1841C9682DE58DAB0042FA9C /* XCRemoteSwiftPackageReference "Reachability" */,
 				1841C96B2DE58DD50042FA9C /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
 				189E2C0D2DE5B0BD00FE4F76 /* XCRemoteSwiftPackageReference "SDWebImage" */,
-				1872245C2DE6F44A005B84D4 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1841C9102DE5835E0042FA9C /* Products */;
@@ -173,6 +169,7 @@
 				DEVELOPMENT_TEAM = 47GT5NX9V2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NetworkAwareFeed/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = QuantroCart;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -191,7 +188,7 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -205,6 +202,7 @@
 				DEVELOPMENT_TEAM = 47GT5NX9V2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NetworkAwareFeed/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = QuantroCart;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -223,7 +221,7 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -394,14 +392,6 @@
 				minimumVersion = 5.2.0;
 			};
 		};
-		1872245C2DE6F44A005B84D4 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 8.3.2;
-			};
-		};
 		189E2C0D2DE5B0BD00FE4F76 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
@@ -427,11 +417,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1841C96B2DE58DD50042FA9C /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
 			productName = NVActivityIndicatorView;
-		};
-		1872245D2DE6F44A005B84D4 /* Kingfisher */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 1872245C2DE6F44A005B84D4 /* XCRemoteSwiftPackageReference "Kingfisher" */;
-			productName = Kingfisher;
 		};
 		189E2C0E2DE5B0BD00FE4F76 /* SDWebImage */ = {
 			isa = XCSwiftPackageProductDependency;
