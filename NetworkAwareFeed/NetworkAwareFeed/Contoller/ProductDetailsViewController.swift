@@ -261,50 +261,6 @@ class ProductDetailsViewController: UIViewController {
                 self.tagsLabel.isHidden = true
             }
         }
-        
-        // After setting visibility, adjust the layout to remove gaps
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            self.adjustLabelSpacing()
-        }
-    }
-    
-    /// Adjusts the spacing between labels to remove gaps when some labels are hidden
-    private func adjustLabelSpacing() {
-        // Create an array of all detail labels
-        let allLabels: [UILabel] = [
-            brandLabel, categoryLabel, availabilityLabel, minOrderLabel,
-            weightLabel, ratingLabel, warrantyLabel, shippingLabel,
-            returnsLabel, tagsLabel
-        ]
-        
-        // Find the visible labels
-        let visibleLabels = allLabels.filter { !$0.isHidden }
-        
-        // Skip if there are no visible labels
-        guard !visibleLabels.isEmpty else { return }
-        
-        // Add spacing animation
-        UIView.animate(withDuration: 0.2) {
-            // Apply proper margins or spacing as needed
-            for label in visibleLabels {
-                // Ensure proper spacing between labels
-                let topMargin: CGFloat = 8
-                let bottomMargin: CGFloat = 8
-                
-                if let superview = label.superview {
-                    // Adjust constraints or frame as needed
-                    // This is a simplified example - in a real app,
-                    // you would adjust actual constraints
-                    
-                    // Here we're just setting some visual properties
-                    // to make gaps less noticeable
-                    label.alpha = 1.0
-                    
-                    // You could also adjust frames or constraints here
-                    // if needed for your specific layout
-                }
-            }
-        }
     }
     
     // MARK: - Actions
