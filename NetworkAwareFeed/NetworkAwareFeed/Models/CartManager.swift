@@ -63,4 +63,4 @@ class CartManager {
             items = decoded
         }
     }
-} 
+}
