@@ -32,6 +32,8 @@ class ProductDetailsViewController: UIViewController {
     @IBOutlet weak var addToCartButton: UIButton!
     @IBOutlet weak var buyNowButton: UIButton!
     @IBOutlet weak var cosmosView: CosmosView!
+    @IBOutlet weak var reviewsButton: UIButton!
+    @IBOutlet weak var reviewCountLabel: UILabel!
     
     // MARK: - Properties
     var productDetails: ProductsData?
@@ -280,6 +282,12 @@ class ProductDetailsViewController: UIViewController {
             } else {
                 self.tagsLabel.isHidden = true
             }
+            
+            // Configure Reviews Button
+            let reviewCount = product.reviews?.count ?? 0
+            self.reviewCountLabel.text = "(\(reviewCount) \(reviewCount == 1 ? "Review" : "Reviews"))"
+            self.reviewsButton.isHidden = reviewCount == 0
+            self.reviewCountLabel.isHidden = reviewCount == 0
         }
     }
     
@@ -381,6 +389,14 @@ class ProductDetailsViewController: UIViewController {
             return
         }
         navigationController?.pushViewController(cartVC, animated: true)
+    }
+    
+    @IBAction private func reviewsButtonTapped() {
+        guard let reviewVC = UIStoryboard(name: "Main", bundle: nil)
+            .instantiateViewController(withIdentifier: "ReviewsViewController") as? ReviewsViewController else { return }
+        reviewVC.fetchedData = productDetails?.reviews ?? []
+        navigationController?.pushViewController(reviewVC, animated: true)
+        
     }
 }
 

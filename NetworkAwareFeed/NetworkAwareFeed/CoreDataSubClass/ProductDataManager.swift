@@ -53,6 +53,7 @@ final class ProductDataManager {
                 product.setValue(productData.warrantyInformation, forKey: "warrantyInformation")
                 product.setValue(productData.shippingInformation, forKey: "shippingInformation")
                 product.setValue(productData.availabilityStatus, forKey: "availabilityStatus")
+                product.setValue(productData.reviews, forKey: "reviews")
                 product.setValue(productData.returnPolicy, forKey: "returnPolicy")
                 product.setValue(productData.minimumOrderQuantity, forKey: "minimumOrderQuantity")
                 product.setValue(productData.images, forKey: "images")
@@ -108,6 +109,7 @@ final class ProductDataManager {
                         warrantyInformation: data.value(forKey: "warrantyInformation") as? String,
                         shippingInformation: data.value(forKey: "shippingInformation") as? String,
                         availabilityStatus: data.value(forKey: "availabilityStatus") as? String,
+                        reviews: data.value(forKey: "reviews") as? [ReviewsData],
                         returnPolicy: data.value(forKey: "returnPolicy") as? String,
                         minimumOrderQuantity: data.value(forKey: "minimumOrderQuantity") as? Int,
                         images: data.value(forKey: "images") as? [String],
@@ -169,6 +171,7 @@ final class ProductDataManager {
                     targetProduct.setValue(product.warrantyInformation, forKey: "warrantyInformation")
                     targetProduct.setValue(product.shippingInformation, forKey: "shippingInformation")
                     targetProduct.setValue(product.availabilityStatus, forKey: "availabilityStatus")
+                    targetProduct.setValue(product.reviews, forKey: "reviews")
                     targetProduct.setValue(product.returnPolicy, forKey: "returnPolicy")
                     targetProduct.setValue(product.minimumOrderQuantity, forKey: "minimumOrderQuantity")
                     targetProduct.setValue(product.images, forKey: "images")

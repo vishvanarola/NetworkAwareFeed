@@ -77,6 +77,7 @@ final class CartDataManager {
                             warrantyInformation: p.warrantyInformation,
                             shippingInformation: p.shippingInformation,
                             availabilityStatus: p.availabilityStatus,
+                            reviews: p.reviews as? [ReviewsData],
                             returnPolicy: p.returnPolicy,
                             minimumOrderQuantity: Int(p.minimumOrderQuantity),
                             images: p.images as? [String],

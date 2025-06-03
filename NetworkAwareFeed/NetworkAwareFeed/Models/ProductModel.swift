@@ -47,13 +47,14 @@ struct ProductsData: Codable {
     let warrantyInformation: String?
     let shippingInformation: String?
     let availabilityStatus: String?
+    let reviews: [ReviewsData]?
     let returnPolicy: String?
     let minimumOrderQuantity: Int?
     let images: [String]?
     let thumbnail: String?
     
     enum CodingKeys: String, CodingKey {
-        case id, title, description, category, price, discountPercentage, rating, stock, tags, brand, sku, weight, warrantyInformation, shippingInformation, availabilityStatus, returnPolicy, minimumOrderQuantity, images, thumbnail
+        case id, title, description, category, price, discountPercentage, rating, stock, tags, brand, sku, weight, warrantyInformation, shippingInformation, availabilityStatus, reviews, returnPolicy, minimumOrderQuantity, images, thumbnail
     }
     
     init(from decoder: Decoder) throws {
@@ -73,6 +74,7 @@ struct ProductsData: Codable {
         warrantyInformation = try values.decodeIfPresent(String.self, forKey: .warrantyInformation)
         shippingInformation = try values.decodeIfPresent(String.self, forKey: .shippingInformation)
         availabilityStatus = try values.decodeIfPresent(String.self, forKey: .availabilityStatus)
+        reviews = try values.decodeIfPresent([ReviewsData].self, forKey: .reviews)
         returnPolicy = try values.decodeIfPresent(String.self, forKey: .returnPolicy)
         minimumOrderQuantity = try values.decodeIfPresent(Int.self, forKey: .minimumOrderQuantity)
         images = try values.decodeIfPresent([String].self, forKey: .images)
@@ -96,6 +98,7 @@ struct ProductsData: Codable {
         warrantyInformation: String?,
         shippingInformation: String?,
         availabilityStatus: String?,
+        reviews: [ReviewsData]?,
         returnPolicy: String?,
         minimumOrderQuantity: Int?,
         images: [String]?,
@@ -116,9 +119,45 @@ struct ProductsData: Codable {
         self.warrantyInformation = warrantyInformation
         self.shippingInformation = shippingInformation
         self.availabilityStatus = availabilityStatus
+        self.reviews = reviews
         self.returnPolicy = returnPolicy
         self.minimumOrderQuantity = minimumOrderQuantity
         self.images = images
         self.thumbnail = thumbnail
+    }
+}
+
+struct ReviewsData: Codable {
+    let rating: Int?
+    let comment: String?
+    let date: String?
+    let reviewerName: String?
+    let reviewerEmail: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case rating, comment, date, reviewerName, reviewerEmail
+    }
+    
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        rating = try values.decodeIfPresent(Int.self, forKey: .rating)
+        comment = try values.decodeIfPresent(String.self, forKey: .comment)
+        date = try values.decodeIfPresent(String.self, forKey: .date)
+        reviewerName = try values.decodeIfPresent(String.self, forKey: .reviewerName)
+        reviewerEmail = try values.decodeIfPresent(String.self, forKey: .reviewerEmail)
+    }
+    
+    init(
+        rating: Int?,
+        comment: String?,
+        date: String?,
+        reviewerName: String?,
+        reviewerEmail: String?
+    ) {
+        self.rating = rating
+        self.comment = comment
+        self.date = date
+        self.reviewerName = reviewerName
+        self.reviewerEmail = reviewerEmail
     }
 }

@@ -109,17 +109,10 @@ class ProductsListViewController: UIViewController {
             self.connectionStatusView.backgroundColor = isConnected ? .systemGreen : .systemRed
             self.connectionStatusLabel.text = isConnected ? TextMessage.onlineMode : TextMessage.offlineMode
             
-            // Adjust table view insets when showing the connection status bar
-            let contentInsets = UIEdgeInsets(top: isConnected ? 10 : 40, left: 0, bottom: 20, right: 0)
-            
             // Show or hide with animation
             UIView.animate(withDuration: 0.3) {
                 let constraint = self.connectionStatusView.constraints.first { $0.firstAttribute == .height }
                 constraint?.constant = isConnected ? 30 : 30 // Show the bar
-                
-                // Adjust table view insets to prevent overlapping
-                self.listTableView.contentInset = contentInsets
-                self.listTableView.scrollIndicatorInsets = contentInsets
                 
                 self.view.layoutIfNeeded()
                 
@@ -127,9 +120,6 @@ class ProductsListViewController: UIViewController {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                     UIView.animate(withDuration: 0.3) {
                         constraint?.constant = 0
-                        // Reset table view insets
-                        self.listTableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0)
-                        self.listTableView.scrollIndicatorInsets = UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0)
                         self.view.layoutIfNeeded()
                     }
                 }
@@ -148,8 +138,7 @@ class ProductsListViewController: UIViewController {
         self.listTableView.scrollIndicatorInsets = UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0)
         
         // Cell registration
-        self.listTableView.register(UINib(nibName: ProductTableViewCell.identifier, bundle: nil),
-                                    forCellReuseIdentifier: ProductTableViewCell.identifier)
+        self.listTableView.register(UINib(nibName: ProductTableViewCell.identifier, bundle: nil), forCellReuseIdentifier: ProductTableViewCell.identifier)
         
         // Configure pull-to-refresh
         refreshControl.tintColor = .systemBlue
