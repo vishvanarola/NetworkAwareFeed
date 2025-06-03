@@ -12,7 +12,7 @@ import Alamofire
 
 struct APIConstants {
     static let baseURL = "https://dummyjson.com"
-    static let beautyProductsEndpoint = "/products"
+    static let quantroProductsEndpoint = "/products"
 }
 
 struct ParamVariables {

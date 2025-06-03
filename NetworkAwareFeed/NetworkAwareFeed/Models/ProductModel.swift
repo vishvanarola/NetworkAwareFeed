@@ -1,5 +1,5 @@
 //
-//  BeautyProductModel.swift
+//  ProductModel.swift
 //  NetworkAwareFeed
 //
 //  Created by apple on 27/05/25.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct BeautyProductModel : Codable {
-    let products : [BeautyProducts]?
+struct ProductModel : Codable {
+    let products : [ProductsData]?
     let total : Int?
     let skip : Int?
     let limit : Int?
@@ -23,7 +23,7 @@ struct BeautyProductModel : Codable {
     
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        products = try values.decodeIfPresent([BeautyProducts].self, forKey: .products)
+        products = try values.decodeIfPresent([ProductsData].self, forKey: .products)
         total = try values.decodeIfPresent(Int.self, forKey: .total)
         skip = try values.decodeIfPresent(Int.self, forKey: .skip)
         limit = try values.decodeIfPresent(Int.self, forKey: .limit)
@@ -31,7 +31,7 @@ struct BeautyProductModel : Codable {
     
 }
 
-struct BeautyProducts: Codable {
+struct ProductsData: Codable {
     let id: Int?
     let title: String?
     let description: String?

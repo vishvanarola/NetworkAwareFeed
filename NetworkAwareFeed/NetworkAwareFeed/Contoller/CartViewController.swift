@@ -16,7 +16,7 @@ class CartViewController: UIViewController {
     
     // MARK: - Properties
     private let cartDataManager = CartDataManager()
-    private var cartItems: [(product: BeautyProducts, quantity: Int)] = []
+    private var cartItems: [(product: ProductsData, quantity: Int)] = []
     
     // MARK: - Lifecycle
     override func viewDidLoad() {

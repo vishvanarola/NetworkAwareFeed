@@ -16,19 +16,19 @@ final class CartDataManager {
     }
     
     // MARK: - Add Product to Cart
-    func addProductToCart(_ beautyProduct: BeautyProducts, quantity: Int = 1) {
+    func addProductToCart(_ productData: ProductsData, quantity: Int = 1) {
         guard let context = context else { return }
         
         context.perform {
             let fetchRequest: NSFetchRequest<CartProduct> = CartProduct.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "product.id == %d", beautyProduct.id ?? 0)
+            fetchRequest.predicate = NSPredicate(format: "product.id == %d", productData.id ?? 0)
             
             do {
                 if let existingCartItem = try context.fetch(fetchRequest).first {
                     existingCartItem.quantity += Int64(quantity)
                 } else {
-                    let productFetch: NSFetchRequest<BeautyProduct> = BeautyProduct.fetchRequest()
-                    productFetch.predicate = NSPredicate(format: "id == %d", beautyProduct.id ?? 0)
+                    let productFetch: NSFetchRequest<QuantroProduct> = QuantroProduct.fetchRequest()
+                    productFetch.predicate = NSPredicate(format: "id == %d", productData.id ?? 0)
                     
                     guard let existingProduct = try context.fetch(productFetch).first else {
                         print("Product not found in Core Data. Ensure it's saved before adding to cart.")
@@ -48,10 +48,10 @@ final class CartDataManager {
     }
     
     // MARK: - Retrieve Cart Items
-    func getCartItems() -> [(product: BeautyProducts, quantity: Int)] {
+    func getCartItems() -> [(product: ProductsData, quantity: Int)] {
         guard let context = context else { return [] }
         
-        var items: [(BeautyProducts, Int)] = []
+        var items: [(ProductsData, Int)] = []
         
         context.performAndWait {
             let fetchRequest: NSFetchRequest<CartProduct> = CartProduct.fetchRequest()
@@ -61,7 +61,7 @@ final class CartDataManager {
                 
                 for item in cartItems {
                     if let p = item.product {
-                        let beauty = BeautyProducts(
+                        let product = ProductsData(
                             id: Int(p.id),
                             title: p.title,
                             description: p.desc,
@@ -82,7 +82,7 @@ final class CartDataManager {
                             images: p.images as? [String],
                             thumbnail: p.thumbnail
                         )
-                        items.append((beauty, Int(item.quantity)))
+                        items.append((product, Int(item.quantity)))
                     }
                 }
             } catch {

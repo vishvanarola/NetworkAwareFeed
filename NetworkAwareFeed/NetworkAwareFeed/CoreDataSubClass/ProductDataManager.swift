@@ -1,5 +1,5 @@
 //
-//  BeautyProductDataManager.swift
+//  ProductDataManager.swift
 //  NetworkAwareFeed
 //
 //  Created by apple on 28/05/25.
@@ -8,7 +8,7 @@
 import UIKit
 import CoreData
 
-final class BeautyProductDataManager {
+final class ProductDataManager {
     
     // Helper function to safely perform work on the main thread
     private func performOnMainThread(_ block: () -> Void) {
@@ -21,7 +21,7 @@ final class BeautyProductDataManager {
         }
     }
     
-    func createData(_ beautyProducts: [BeautyProducts]) {
+    func createData(_ productsData: [ProductsData]) {
         // Move UIApplication.shared.delegate access to main thread
         var appDelegate: AppDelegate?
         
@@ -34,29 +34,29 @@ final class BeautyProductDataManager {
         let managedContext = appDelegate.persistentContainer.viewContext
         
         performOnMainThread {
-            let productEntity = NSEntityDescription.entity(forEntityName: entityBeautyProduct, in: managedContext)!
+            let productEntity = NSEntityDescription.entity(forEntityName: entityQuantroProduct, in: managedContext)!
             
-            for beautyProduct in beautyProducts {
+            for productData in productsData {
                 let product = NSManagedObject(entity: productEntity, insertInto: managedContext)
-                product.setValue(beautyProduct.id, forKey: "id")
-                product.setValue(beautyProduct.title, forKey: "title")
-                product.setValue(beautyProduct.description, forKey: "desc")
-                product.setValue(beautyProduct.category, forKey: "category")
-                product.setValue(beautyProduct.price, forKey: "price")
-                product.setValue(beautyProduct.discountPercentage, forKey: "discountPercentage")
-                product.setValue(beautyProduct.rating, forKey: "rating")
-                product.setValue(beautyProduct.stock, forKey: "stock")
-                product.setValue(beautyProduct.tags, forKey: "tags")
-                product.setValue(beautyProduct.brand, forKey: "brand")
-                product.setValue(beautyProduct.sku, forKey: "sku")
-                product.setValue(beautyProduct.weight, forKey: "weight")
-                product.setValue(beautyProduct.warrantyInformation, forKey: "warrantyInformation")
-                product.setValue(beautyProduct.shippingInformation, forKey: "shippingInformation")
-                product.setValue(beautyProduct.availabilityStatus, forKey: "availabilityStatus")
-                product.setValue(beautyProduct.returnPolicy, forKey: "returnPolicy")
-                product.setValue(beautyProduct.minimumOrderQuantity, forKey: "minimumOrderQuantity")
-                product.setValue(beautyProduct.images, forKey: "images")
-                product.setValue(beautyProduct.thumbnail, forKey: "thumbnail")
+                product.setValue(productData.id, forKey: "id")
+                product.setValue(productData.title, forKey: "title")
+                product.setValue(productData.description, forKey: "desc")
+                product.setValue(productData.category, forKey: "category")
+                product.setValue(productData.price, forKey: "price")
+                product.setValue(productData.discountPercentage, forKey: "discountPercentage")
+                product.setValue(productData.rating, forKey: "rating")
+                product.setValue(productData.stock, forKey: "stock")
+                product.setValue(productData.tags, forKey: "tags")
+                product.setValue(productData.brand, forKey: "brand")
+                product.setValue(productData.sku, forKey: "sku")
+                product.setValue(productData.weight, forKey: "weight")
+                product.setValue(productData.warrantyInformation, forKey: "warrantyInformation")
+                product.setValue(productData.shippingInformation, forKey: "shippingInformation")
+                product.setValue(productData.availabilityStatus, forKey: "availabilityStatus")
+                product.setValue(productData.returnPolicy, forKey: "returnPolicy")
+                product.setValue(productData.minimumOrderQuantity, forKey: "minimumOrderQuantity")
+                product.setValue(productData.images, forKey: "images")
+                product.setValue(productData.thumbnail, forKey: "thumbnail")
             }
             
             do {
@@ -67,13 +67,13 @@ final class BeautyProductDataManager {
         }
         
         // Do image downloading outside of the main thread
-        for beautyProduct in beautyProducts {
-            downloadAndCacheImages(for: beautyProduct)
+        for product in productsData {
+            downloadAndCacheImages(for: product)
         }
     }
     
-    func retrieveData() -> [BeautyProducts] {
-        var beautyProducts: [BeautyProducts] = []
+    func retrieveData() -> [ProductsData] {
+        var products: [ProductsData] = []
         var appDelegate: AppDelegate?
         
         // Get app delegate on main thread
@@ -87,12 +87,12 @@ final class BeautyProductDataManager {
         
         // Perform Core Data fetch on main thread
         performOnMainThread {
-            let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entityBeautyProduct)
+            let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entityQuantroProduct)
             
             do {
                 let result = try managedContext.fetch(fetchRequest)
                 for data in result {
-                    let product = BeautyProducts(
+                    let product = ProductsData(
                         id: data.value(forKey: "id") as? Int,
                         title: data.value(forKey: "title") as? String,
                         description: data.value(forKey: "desc") as? String,
@@ -113,7 +113,7 @@ final class BeautyProductDataManager {
                         images: data.value(forKey: "images") as? [String],
                         thumbnail: data.value(forKey: "thumbnail") as? String
                     )
-                    beautyProducts.append(product)
+                    products.append(product)
                 }
                 
             } catch {
@@ -121,10 +121,10 @@ final class BeautyProductDataManager {
             }
         }
         
-        return beautyProducts
+        return products
     }
     
-    func updateData(_ beautyProducts: [BeautyProducts]) {
+    func updateData(_ products: [ProductsData]) {
         var appDelegate: AppDelegate?
         
         // Get app delegate on main thread
@@ -138,18 +138,18 @@ final class BeautyProductDataManager {
         
         // Perform Core Data operations on main thread
         performOnMainThread {
-            let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entityBeautyProduct)
+            let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entityQuantroProduct)
             
             do {
                 let existingProducts = try managedContext.fetch(fetchRequest)
                 
-                for product in beautyProducts {
+                for product in products {
                     let productId = product.id ?? 0
                     
                     let targetProduct = existingProducts.first(where: {
                         ($0.value(forKey: "id") as? Int) == productId
                     }) ?? {
-                        let entity = NSEntityDescription.entity(forEntityName: entityBeautyProduct, in: managedContext)!
+                        let entity = NSEntityDescription.entity(forEntityName: entityQuantroProduct, in: managedContext)!
                         let newProduct = NSManagedObject(entity: entity, insertInto: managedContext)
                         newProduct.setValue(productId, forKey: "id")
                         return newProduct
@@ -183,7 +183,7 @@ final class BeautyProductDataManager {
         }
         
         // Do image downloading outside of the main thread
-        for product in beautyProducts {
+        for product in products {
             downloadAndCacheImages(for: product)
         }
     }
@@ -202,7 +202,7 @@ final class BeautyProductDataManager {
         
         // Perform Core Data operations on main thread
         performOnMainThread {
-            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityBeautyProduct)
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityQuantroProduct)
             
             let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
             
@@ -218,7 +218,7 @@ final class BeautyProductDataManager {
     // MARK: - Helper Methods
     
     /// Downloads and caches images for a product
-    private func downloadAndCacheImages(for product: BeautyProducts) {
+    private func downloadAndCacheImages(for product: ProductsData) {
         let productId = "\(product.id ?? 0)"
         
         // Cache thumbnail image

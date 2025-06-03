@@ -34,7 +34,7 @@ class ProductDetailsViewController: UIViewController {
     @IBOutlet weak var cosmosView: CosmosView!
     
     // MARK: - Properties
-    var beautyProductDetails: BeautyProducts?
+    var productDetails: ProductsData?
     private lazy var scrollViewGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleCollectionViewTap))
     private let cartDataManager = CartDataManager()
     
@@ -113,7 +113,7 @@ class ProductDetailsViewController: UIViewController {
     
     private func setupCartButtons() {
         // Update buttons state based on stock availability
-        let isOutOfStock = beautyProductDetails?.stock == 0
+        let isOutOfStock = productDetails?.stock == 0
         addToCartButton.isEnabled = !isOutOfStock
         buyNowButton.isEnabled = !isOutOfStock
         
@@ -141,14 +141,14 @@ class ProductDetailsViewController: UIViewController {
         listCollectionView.layer.shadowRadius = 6
         
         self.listCollectionView.register(
-            UINib(nibName: BeautyProductCollectionViewCell.identifier, bundle: nil),
-            forCellWithReuseIdentifier: BeautyProductCollectionViewCell.identifier
+            UINib(nibName: ProductCollectionViewCell.identifier, bundle: nil),
+            forCellWithReuseIdentifier: ProductCollectionViewCell.identifier
         )
     }
     
     /// Sets up the UI elements with the product data.
     private func configureProductData() {
-        guard let product = self.beautyProductDetails else { return }
+        guard let product = self.productDetails else { return }
         
         // Animate the content appearance
         UIView.animate(withDuration: 0.3) {
@@ -298,7 +298,7 @@ class ProductDetailsViewController: UIViewController {
     }
     
     private func animateImageTap(at indexPath: IndexPath) {
-        if let cell = listCollectionView.cellForItem(at: indexPath) as? BeautyProductCollectionViewCell {
+        if let cell = listCollectionView.cellForItem(at: indexPath) as? ProductCollectionViewCell {
             UIView.animate(withDuration: 0.1, animations: {
                 cell.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
             }, completion: { _ in
@@ -310,7 +310,7 @@ class ProductDetailsViewController: UIViewController {
     }
     
     @IBAction private func addToCartTapped() {
-        guard let product = beautyProductDetails else { return }
+        guard let product = productDetails else { return }
         
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         
@@ -359,7 +359,7 @@ class ProductDetailsViewController: UIViewController {
     }
     
     @IBAction private func buyNowTapped() {
-        guard let product = beautyProductDetails else { return }
+        guard let product = productDetails else { return }
         
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         
@@ -387,12 +387,12 @@ class ProductDetailsViewController: UIViewController {
 //MARK: - Collection View Delegate & Data Source
 extension ProductDetailsViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.beautyProductDetails?.images?.count ?? 0
+        return self.productDetails?.images?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = self.listCollectionView.dequeueReusableCell(withReuseIdentifier: BeautyProductCollectionViewCell.identifier, for: indexPath) as! BeautyProductCollectionViewCell
-        cell.setUpData(imgUrl: self.beautyProductDetails?.images?[indexPath.row] ?? "", id: self.beautyProductDetails?.id ?? 0)
+        let cell = self.listCollectionView.dequeueReusableCell(withReuseIdentifier: ProductCollectionViewCell.identifier, for: indexPath) as! ProductCollectionViewCell
+        cell.setUpData(imgUrl: self.productDetails?.images?[indexPath.row] ?? "", id: self.productDetails?.id ?? 0)
         return cell
     }
     

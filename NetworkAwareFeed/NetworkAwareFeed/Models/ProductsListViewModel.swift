@@ -1,23 +1,23 @@
 //
-//  BeautyProductsListViewModel.swift
+//  ProductsListViewModel.swift
 //  NetworkAwareFeed
 //
 //  Created by apple on 27/05/25.
 //
 
-class BeautyProductsListViewModel {
-    private let service: BeautyProductServiceProtocol
-    private(set) var products: [BeautyProducts] = []
+class ProductsListViewModel {
+    private let service: ProductServiceProtocol
+    private(set) var products: [ProductsData] = []
     
     var onProductsFetched: (() -> Void)?
     var onError: ((Error) -> Void)?
     
-    init(service: BeautyProductServiceProtocol = BeautyProductService()) {
+    init(service: ProductServiceProtocol = ProductService()) {
         self.service = service
     }
     
     func fetchProducts() {
-        service.fetchBeautyProducts { [weak self] result in
+        service.fetchQuantroProducts { [weak self] result in
             switch result {
             case .success(let products):
                 self?.products = products
@@ -28,7 +28,7 @@ class BeautyProductsListViewModel {
         }
     }
     
-    func product(at index: Int) -> BeautyProducts {
+    func product(at index: Int) -> ProductsData {
         return products[index]
     }
     
@@ -36,7 +36,7 @@ class BeautyProductsListViewModel {
         return products.count
     }
     
-    func setLocalProducts(_ products: [BeautyProducts]) {
+    func setLocalProducts(_ products: [ProductsData]) {
         self.products = products
     }
 }

@@ -83,7 +83,7 @@ class CartItemTableViewCell: UITableViewCell {
     }
     
     // MARK: - Configuration
-    func configure(with product: BeautyProducts, quantity: Int) {
+    func configure(with product: ProductsData, quantity: Int) {
         self.quantity = quantity
         self.stock = product.stock ?? 1
         titleLabel.text = product.title

@@ -1,5 +1,5 @@
 //
-//  BeautyProductsListViewController.swift
+//  ProductsListViewController.swift
 //  NetworkAwareFeed
 //
 //  Created by apple on 27/05/25.
@@ -7,14 +7,14 @@
 
 import UIKit
 
-class BeautyProductsListViewController: UIViewController {
+class ProductsListViewController: UIViewController {
     
     //MARK: - IBOutlets
     @IBOutlet weak var listTableView: UITableView!
     
     // MARK: - Properties
-    private let viewModel = BeautyProductsListViewModel()
-    private let dataManager = BeautyProductDataManager()
+    private let viewModel = ProductsListViewModel()
+    private let dataManager = ProductDataManager()
     private let refreshControl = UIRefreshControl()
     private var loadingIndicator: UIActivityIndicatorView!
     private var connectionStatusView: UIView!
@@ -148,8 +148,8 @@ class BeautyProductsListViewController: UIViewController {
         self.listTableView.scrollIndicatorInsets = UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0)
         
         // Cell registration
-        self.listTableView.register(UINib(nibName: BeautyProductTableViewCell.identifier, bundle: nil),
-                                    forCellReuseIdentifier: BeautyProductTableViewCell.identifier)
+        self.listTableView.register(UINib(nibName: ProductTableViewCell.identifier, bundle: nil),
+                                    forCellReuseIdentifier: ProductTableViewCell.identifier)
         
         // Configure pull-to-refresh
         refreshControl.tintColor = .systemBlue
@@ -200,7 +200,7 @@ class BeautyProductsListViewController: UIViewController {
             // Since our dataManager now handles main thread access properly, 
             // we can use a background thread without issues
             DispatchQueue.global(qos: .background).async {
-                let products = self?.viewModel.products ?? [BeautyProducts]()
+                let products = self?.viewModel.products ?? [ProductsData]()
                 if self?.retrieveProductsCount() == 0 {
                     self?.dataManager.createData(products)
                 } else {
@@ -284,7 +284,7 @@ class BeautyProductsListViewController: UIViewController {
 }
 
 //MARK: - Table View Delegate & Data Source
-extension BeautyProductsListViewController: UITableViewDataSource, UITableViewDelegate {
+extension ProductsListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let count = self.viewModel.numberOfProducts
@@ -307,7 +307,7 @@ extension BeautyProductsListViewController: UITableViewDataSource, UITableViewDe
     
     func tableView(_ tableView: UITableView,
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: BeautyProductTableViewCell.identifier, for: indexPath) as? BeautyProductTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ProductTableViewCell.identifier, for: indexPath) as? ProductTableViewCell else {
             return UITableViewCell()
         }
         
@@ -329,7 +329,7 @@ extension BeautyProductsListViewController: UITableViewDataSource, UITableViewDe
         generator.impactOccurred()
         
         guard let nav: ProductDetailsViewController = UIStoryboard(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "ProductDetailsViewController") as? ProductDetailsViewController else { return }
-        nav.beautyProductDetails = self.viewModel.product(at: indexPath.row)
+        nav.productDetails = self.viewModel.product(at: indexPath.row)
         self.navigationController?.pushViewController(nav, animated: true)
     }
 }

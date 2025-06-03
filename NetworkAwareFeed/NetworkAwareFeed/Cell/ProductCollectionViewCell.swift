@@ -1,5 +1,5 @@
 //
-//  BeautyProductCollectionViewCell.swift
+//  ProductCollectionViewCell.swift
 //  NetworkAwareFeed
 //
 //  Created by apple on 27/05/25.
@@ -8,13 +8,13 @@
 import UIKit
 import SDWebImage
 
-class BeautyProductCollectionViewCell: UICollectionViewCell {
+class ProductCollectionViewCell: UICollectionViewCell {
     
     //MARK: - IBOutlets
     @IBOutlet weak var imgView: UIImageView!
     
     //MARK: - Properties
-    static let identifier = "BeautyProductCollectionViewCell"
+    static let identifier = "ProductCollectionViewCell"
     private var activityIndicator: UIActivityIndicatorView!
     
     //MARK: - Life cycle

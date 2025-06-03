@@ -1,5 +1,5 @@
 //
-//  BeautyProductTableViewCell.swift
+//  ProductTableViewCell.swift
 //  NetworkAwareFeed
 //
 //  Created by apple on 27/05/25.
@@ -8,7 +8,7 @@
 import UIKit
 import SDWebImage
 
-class BeautyProductTableViewCell: UITableViewCell {
+class ProductTableViewCell: UITableViewCell {
     
     //MARK: - IBOutlets
     @IBOutlet weak var mainView: UIView!
@@ -17,7 +17,7 @@ class BeautyProductTableViewCell: UITableViewCell {
     @IBOutlet weak var priceLabel: UILabel!
     
     //MARK: - Properties
-    static let identifier = "BeautyProductTableViewCell"
+    static let identifier = "ProductTableViewCell"
     
     //MARK: - Life cycle
     override func awakeFromNib() {

@@ -9,15 +9,15 @@ import Foundation
 
 // MARK: - API Service Protocol
 
-protocol BeautyProductServiceProtocol {
-    func fetchBeautyProducts(completion: @escaping (Result<[BeautyProducts], Error>) -> Void)
+protocol ProductServiceProtocol {
+    func fetchQuantroProducts(completion: @escaping (Result<[ProductsData], Error>) -> Void)
 }
 
 // MARK: - API Service
 
-class BeautyProductService: BeautyProductServiceProtocol {
-    func fetchBeautyProducts(completion: @escaping (Result<[BeautyProducts], Error>) -> Void) {
-        let url = APIConstants.baseURL + APIConstants.beautyProductsEndpoint
+class ProductService: ProductServiceProtocol {
+    func fetchQuantroProducts(completion: @escaping (Result<[ProductsData], Error>) -> Void) {
+        let url = APIConstants.baseURL + APIConstants.quantroProductsEndpoint
         
         NetworkManager.shared.apiCall(url: url,
                                       method: ParamVariables.get,
@@ -25,7 +25,7 @@ class BeautyProductService: BeautyProductServiceProtocol {
                                       headers: nil,
                                       success: { data in
             do {
-                let decoded = try JSONDecoder().decode(BeautyProductModel.self, from: data)
+                let decoded = try JSONDecoder().decode(ProductModel.self, from: data)
                 completion(.success(decoded.products ?? []))
             } catch {
                 completion(.failure(error))

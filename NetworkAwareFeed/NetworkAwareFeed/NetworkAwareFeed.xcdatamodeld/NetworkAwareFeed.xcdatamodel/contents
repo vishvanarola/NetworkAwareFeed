@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23231" systemVersion="24E263" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="BeautyProduct" representedClassName="BeautyProduct" syncable="YES" codeGenerationType="class">
+    <entity name="CartProduct" representedClassName="CartProduct" syncable="YES" codeGenerationType="class">
+        <attribute name="quantity" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="product" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="QuantroProduct" inverseName="cart" inverseEntity="QuantroProduct"/>
+    </entity>
+    <entity name="QuantroProduct" representedClassName="QuantroProduct" syncable="YES" codeGenerationType="class">
         <attribute name="availabilityStatus" optional="YES" attributeType="String"/>
         <attribute name="brand" optional="YES" attributeType="String"/>
         <attribute name="category" optional="YES" attributeType="String"/>
@@ -21,9 +25,5 @@
         <attribute name="warrantyInformation" optional="YES" attributeType="String"/>
         <attribute name="weight" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="cart" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CartProduct" inverseName="product" inverseEntity="CartProduct"/>
-    </entity>
-    <entity name="CartProduct" representedClassName="CartProduct" syncable="YES" codeGenerationType="class">
-        <attribute name="quantity" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="product" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BeautyProduct" inverseName="cart" inverseEntity="BeautyProduct"/>
     </entity>
 </model>
