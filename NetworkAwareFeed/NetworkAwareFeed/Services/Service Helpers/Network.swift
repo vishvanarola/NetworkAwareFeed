@@ -38,7 +38,7 @@ class NetworkManager {
                  failure: @escaping (String) -> Void) {
         
         guard ReachabilityManager.shared.isNetworkAvailable else {
-            AlertPresenter.shared.presentNoInternetAlert()
+            AlertViewManager.showAlert(title: TextMessage.alert, message: TextMessage.pleaseCheckInternet)
             return
         }
         
@@ -60,32 +60,6 @@ class NetworkManager {
                 }
             case .failure(let error):
                 failure(error.localizedDescription)
-            }
-        }
-    }
-}
-
-// MARK: - Alert Presenter
-
-class AlertPresenter {
-    static let shared = AlertPresenter()
-    
-    private init() {}
-    
-    func presentNoInternetAlert() {
-        let alert = UIAlertController(title: TextMessage.alert, message: TextMessage.pleaseCheckInternet, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        
-        if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
-           let rootVC = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController {
-            
-            var topController = rootVC
-            while let presented = topController.presentedViewController {
-                topController = presented
-            }
-            
-            DispatchQueue.main.async {
-                topController.present(alert, animated: true)
             }
         }
     }

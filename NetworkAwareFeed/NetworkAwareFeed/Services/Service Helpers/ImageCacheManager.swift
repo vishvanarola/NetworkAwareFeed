@@ -60,28 +60,3 @@ final class ImageCacheManager {
         }
     }
 }
-
-//extension UIImageView {
-//    func setImage(from urlString: String?) {
-//        guard let urlString = urlString,
-//              let url = URL(string: urlString) else {
-//            self.image = nil
-//            return
-//        }
-//        
-//        if let cached = ImageCacheManager.shared.getImage(for: url) {
-//            self.image = cached
-//            return
-//        }
-//        
-//        URLSession.shared.dataTask(with: url) { data, _, error in
-//            guard let data = data, let image = UIImage(data: data), error == nil else { return }
-//            
-//            ImageCacheManager.shared.save(image, for: url)
-//            
-//            DispatchQueue.main.async {
-//                self.image = image
-//            }
-//        }.resume()
-//    }
-//}

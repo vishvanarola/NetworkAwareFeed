@@ -29,11 +29,6 @@ class BeautyProductsListViewController: UIViewController {
         configureNavigationBar()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        updateConnectionStatusBar()
-    }
-    
     // Configure navigation bar appearance
     private func configureNavigationBar() {
         // Ensure the navigation bar is always configured correctly
@@ -112,7 +107,7 @@ class BeautyProductsListViewController: UIViewController {
         DispatchQueue.main.async {
             // Configure the status bar appearance
             self.connectionStatusView.backgroundColor = isConnected ? .systemGreen : .systemRed
-            self.connectionStatusLabel.text = isConnected ? "Online Mode" : "Offline Mode - Viewing Cached Data"
+            self.connectionStatusLabel.text = isConnected ? TextMessage.onlineMode : TextMessage.offlineMode
             
             // Adjust table view insets when showing the connection status bar
             let contentInsets = UIEdgeInsets(top: isConnected ? 10 : 40, left: 0, bottom: 20, right: 0)
@@ -129,15 +124,13 @@ class BeautyProductsListViewController: UIViewController {
                 self.view.layoutIfNeeded()
                 
                 // Auto-hide the online status after 3 seconds
-                if isConnected {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                        UIView.animate(withDuration: 0.3) {
-                            constraint?.constant = 0
-                            // Reset table view insets
-                            self.listTableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0)
-                            self.listTableView.scrollIndicatorInsets = UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0)
-                            self.view.layoutIfNeeded()
-                        }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    UIView.animate(withDuration: 0.3) {
+                        constraint?.constant = 0
+                        // Reset table view insets
+                        self.listTableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0)
+                        self.listTableView.scrollIndicatorInsets = UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0)
+                        self.view.layoutIfNeeded()
                     }
                 }
             }
@@ -160,7 +153,7 @@ class BeautyProductsListViewController: UIViewController {
         
         // Configure pull-to-refresh
         refreshControl.tintColor = .systemBlue
-        refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
+        refreshControl.attributedTitle = NSAttributedString(string: TextMessage.pullToRefresh)
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         listTableView.refreshControl = refreshControl
     }
@@ -236,14 +229,7 @@ class BeautyProductsListViewController: UIViewController {
     }
     
     private func showErrorAlert(message: String) {
-        let alert = UIAlertController(
-            title: "Error Loading Data",
-            message: "Could not load products: \(message)",
-            preferredStyle: .alert
-        )
-        
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        self.present(alert, animated: true)
+        AlertViewManager.showAlert(title: TextMessage.errorLoadingData, message: "Could not load products: \(message)")
     }
     
     // Helper method to get count from Core Data
@@ -252,13 +238,13 @@ class BeautyProductsListViewController: UIViewController {
     }
     
     private func initializeProductData() {
+        // Update connection status to show offline mode
+        updateConnectionStatusBar()
+        
         if ReachabilityManager.shared.isNetworkAvailable {
             self.bindViewModel()
             self.viewModel.fetchProducts()
         } else {
-            // Update connection status to show offline mode
-            updateConnectionStatusBar()
-            
             // Show loading indicator
             loadingIndicator.startAnimating()
             
@@ -306,7 +292,7 @@ extension BeautyProductsListViewController: UITableViewDataSource, UITableViewDe
         // Show empty state if needed
         if count == 0 {
             let emptyLabel = UILabel(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: tableView.bounds.height))
-            emptyLabel.text = "No products available.\nPull down to refresh when online."
+            emptyLabel.text = TextMessage.noProductsPullDown
             emptyLabel.textAlignment = .center
             emptyLabel.textColor = .systemGray
             emptyLabel.numberOfLines = 0

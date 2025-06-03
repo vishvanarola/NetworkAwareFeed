@@ -17,3 +17,5 @@ let SCREEN_WIDTH = UIScreen.main.bounds.size.width
 let SCREEN_HEIGHT = UIScreen.main.bounds.size.height
 
 let entityBeautyProduct = "BeautyProduct"
+
+let yellowColor = UIColor.init(rgb: 0xFEBE00)

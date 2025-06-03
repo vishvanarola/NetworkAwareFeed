@@ -12,6 +12,7 @@ import SDWebImage
 protocol CartItemCellDelegate: AnyObject {
     func cartItemCell(_ cell: CartItemTableViewCell, didUpdateQuantity quantity: Int, caseUpdate: Int)
     func cartItemCellDidTapRemove(_ cell: CartItemTableViewCell)
+    func cartItemCellStockLimitReached(_ cell: CartItemTableViewCell, quantity: Int)
 }
 
 class CartItemTableViewCell: UITableViewCell {
@@ -29,6 +30,7 @@ class CartItemTableViewCell: UITableViewCell {
     static let identifier = "CartItemTableViewCell"
     weak var delegate: CartItemCellDelegate?
     private var quantity: Int = 1
+    private var stock: Int = 1
     
     //MARK: - Life cycle
     override func awakeFromNib() {
@@ -81,17 +83,17 @@ class CartItemTableViewCell: UITableViewCell {
     }
     
     // MARK: - Configuration
-    func configure(with item: CartItem) {
-        titleLabel.text = item.product.title
-        priceLabel.text = "$\(String(format: "%.2f", item.totalPrice))"
-        quantity = item.quantity
+    func configure(with product: BeautyProducts, quantity: Int) {
+        self.quantity = quantity
+        self.stock = product.stock ?? 1
+        titleLabel.text = product.title
+        priceLabel.text = "$\(String(format: "%.2f", (product.price ?? 0) * Double(quantity)))"
         quantityLabel.text = "\(quantity)"
         
-        if let imageUrl = item.product.thumbnail {
-            imgView.sd_setImage(
-                with: URL(string: imageUrl),
-                placeholderImage: UIImage(systemName: "photo")
-            )
+        if let thumbnail = product.thumbnail, let url = URL(string: thumbnail) {
+            imgView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "photo"))
+        } else {
+            imgView.image = UIImage(systemName: "photo")
         }
     }
     
@@ -105,9 +107,12 @@ class CartItemTableViewCell: UITableViewCell {
     }
     
     @IBAction private func plusButtonTapped() {
-        quantity += 1
-        quantityLabel.text = "\(quantity)"
-        delegate?.cartItemCell(self, didUpdateQuantity: quantity, caseUpdate: 1)
+        if quantity < stock {
+            quantity += 1
+            delegate?.cartItemCell(self, didUpdateQuantity: quantity, caseUpdate: 1)
+        } else {
+            delegate?.cartItemCellStockLimitReached(self, quantity: quantity)
+        }
     }
     
     @IBAction private func removeButtonTapped() {

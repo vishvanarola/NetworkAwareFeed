@@ -10,6 +10,7 @@
 		1841C9652DE58D080042FA9C /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 1841C9642DE58D080042FA9C /* Alamofire */; };
 		1841C96A2DE58DAB0042FA9C /* Reachability in Frameworks */ = {isa = PBXBuildFile; productRef = 1841C9692DE58DAB0042FA9C /* Reachability */; };
 		1841C96D2DE58DD50042FA9C /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = 1841C96C2DE58DD50042FA9C /* NVActivityIndicatorView */; };
+		186575F72DED7E2D005BC3A4 /* Cosmos in Frameworks */ = {isa = PBXBuildFile; productRef = 186575F62DED7E2D005BC3A4 /* Cosmos */; };
 		189E2C0F2DE5B0BD00FE4F76 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 189E2C0E2DE5B0BD00FE4F76 /* SDWebImage */; };
 /* End PBXBuildFile section */
 
@@ -43,6 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				186575F72DED7E2D005BC3A4 /* Cosmos in Frameworks */,
 				1841C9652DE58D080042FA9C /* Alamofire in Frameworks */,
 				1841C96A2DE58DAB0042FA9C /* Reachability in Frameworks */,
 				189E2C0F2DE5B0BD00FE4F76 /* SDWebImage in Frameworks */,
@@ -93,6 +95,7 @@
 				1841C9692DE58DAB0042FA9C /* Reachability */,
 				1841C96C2DE58DD50042FA9C /* NVActivityIndicatorView */,
 				189E2C0E2DE5B0BD00FE4F76 /* SDWebImage */,
+				186575F62DED7E2D005BC3A4 /* Cosmos */,
 			);
 			productName = NetworkAwareFeed;
 			productReference = 1841C90F2DE5835E0042FA9C /* NetworkAwareFeed.app */;
@@ -127,6 +130,7 @@
 				1841C9682DE58DAB0042FA9C /* XCRemoteSwiftPackageReference "Reachability" */,
 				1841C96B2DE58DD50042FA9C /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
 				189E2C0D2DE5B0BD00FE4F76 /* XCRemoteSwiftPackageReference "SDWebImage" */,
+				186575F52DED7E2D005BC3A4 /* XCRemoteSwiftPackageReference "Cosmos" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1841C9102DE5835E0042FA9C /* Products */;
@@ -392,6 +396,14 @@
 				minimumVersion = 5.2.0;
 			};
 		};
+		186575F52DED7E2D005BC3A4 /* XCRemoteSwiftPackageReference "Cosmos" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/Cosmos.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 25.0.1;
+			};
+		};
 		189E2C0D2DE5B0BD00FE4F76 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
@@ -417,6 +429,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1841C96B2DE58DD50042FA9C /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
 			productName = NVActivityIndicatorView;
+		};
+		186575F62DED7E2D005BC3A4 /* Cosmos */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 186575F52DED7E2D005BC3A4 /* XCRemoteSwiftPackageReference "Cosmos" */;
+			productName = Cosmos;
 		};
 		189E2C0E2DE5B0BD00FE4F76 /* SDWebImage */ = {
 			isa = XCSwiftPackageProductDependency;

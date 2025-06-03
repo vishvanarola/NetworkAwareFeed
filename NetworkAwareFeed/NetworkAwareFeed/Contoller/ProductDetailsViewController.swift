@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Cosmos
 
 class ProductDetailsViewController: UIViewController {
     
@@ -30,11 +31,12 @@ class ProductDetailsViewController: UIViewController {
     @IBOutlet weak var tagsLabel: UILabel!
     @IBOutlet weak var addToCartButton: UIButton!
     @IBOutlet weak var buyNowButton: UIButton!
+    @IBOutlet weak var cosmosView: CosmosView!
     
     // MARK: - Properties
     var beautyProductDetails: BeautyProducts?
     private lazy var scrollViewGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleCollectionViewTap))
-    private let cartManager = CartManager.shared
+    private let cartDataManager = CartDataManager()
     
     //MARK: - Life cycle
     override func viewDidLoad() {
@@ -93,9 +95,20 @@ class ProductDetailsViewController: UIViewController {
         
         // Add tap gesture to collection view
         listCollectionView.addGestureRecognizer(scrollViewGestureRecognizer)
-                
+        
+        //Button Coreners
         addToCartButton.layer.cornerRadius = 12
         buyNowButton.layer.cornerRadius = 12
+        
+        //Cosmos View
+        cosmosView.settings.fillMode = .precise
+        cosmosView.settings.updateOnTouch = false
+        cosmosView.isUserInteractionEnabled = false
+        cosmosView.settings.starMargin = 0
+        cosmosView.settings.filledColor = yellowColor
+        cosmosView.settings.emptyBorderColor = yellowColor
+        cosmosView.settings.filledBorderColor = yellowColor
+        cosmosView.settings.emptyBorderWidth = 1.2
     }
     
     private func setupCartButtons() {
@@ -107,8 +120,8 @@ class ProductDetailsViewController: UIViewController {
         if isOutOfStock {
             addToCartButton.backgroundColor = .systemGray3
             buyNowButton.backgroundColor = .systemGray3
-            addToCartButton.setTitle("Out of Stock", for: .disabled)
-            buyNowButton.setTitle("Out of Stock", for: .disabled)
+            addToCartButton.setTitle(TextMessage.outOfStock, for: .disabled)
+            buyNowButton.setTitle(TextMessage.outOfStock, for: .disabled)
         }
     }
     
@@ -151,7 +164,7 @@ class ProductDetailsViewController: UIViewController {
             
             // Brand with conditional display
             if let brand = product.brand, !brand.isEmpty {
-                self.brandLabel.text = "🏷️ Brand: " + brand
+                self.brandLabel.text = "🏷️ \(TextMessage.brand): " + brand
                 self.brandLabel.isHidden = false
             } else {
                 self.brandLabel.isHidden = true
@@ -159,7 +172,7 @@ class ProductDetailsViewController: UIViewController {
             
             // Category with conditional display
             if let category = product.category, !category.isEmpty {
-                self.categoryLabel.text = "🗂️ Category: " + category
+                self.categoryLabel.text = "🗂️ \(TextMessage.category): " + category
                 self.categoryLabel.isHidden = false
             } else {
                 self.categoryLabel.isHidden = true
@@ -188,14 +201,14 @@ class ProductDetailsViewController: UIViewController {
             if stockValue < 10 && stockValue > 0 {
                 self.stockLabel.text = "  Only \(stockValue) left in stock!  "
             } else if stockValue == 0 {
-                self.stockLabel.text = "  Out of stock!  "
+                self.stockLabel.text = "  \(TextMessage.outOfStock)!  "
                 self.stockLabel.isHidden = false
                 self.stockHeightConstraint.constant = 26
             }
             
             // Availability status with conditional display
             if let availability = product.availabilityStatus, !availability.isEmpty {
-                self.availabilityLabel.text = "📦 Status: " + availability
+                self.availabilityLabel.text = "📦 \(TextMessage.status): " + availability
                 self.availabilityLabel.textColor = availability.contains("In") ? .systemGreen : .systemRed
                 self.availabilityLabel.isHidden = false
             } else {
@@ -204,7 +217,7 @@ class ProductDetailsViewController: UIViewController {
             
             // Min order quantity with conditional display
             if let minOrderQty = product.minimumOrderQuantity, minOrderQty > 0 {
-                self.minOrderLabel.text = "🛒 Min Order: \(minOrderQty) units"
+                self.minOrderLabel.text = "🛒 \(TextMessage.minOrder): \(minOrderQty) \(TextMessage.units)"
                 self.minOrderLabel.isHidden = false
             } else {
                 self.minOrderLabel.isHidden = true
@@ -220,7 +233,7 @@ class ProductDetailsViewController: UIViewController {
             
             // Weight with conditional display
             if let weight = product.weight, weight > 0 {
-                self.weightLabel.text = "⚖️ Weight: \(weight)g"
+                self.weightLabel.text = "⚖️ \(TextMessage.weight): \(weight)g"
                 self.weightLabel.isHidden = false
             } else {
                 self.weightLabel.isHidden = true
@@ -228,29 +241,17 @@ class ProductDetailsViewController: UIViewController {
             
             // Rating with conditional display and visualization
             if let rating = product.rating, rating > 0 {
-                let fullStars = Int(rating)
-                let halfStar = rating - Double(fullStars) >= 0.5
-                
-                var ratingText = "⭐️ Rating: "
-                for _ in 0..<fullStars {
-                    ratingText += "★"
-                }
-                if halfStar {
-                    ratingText += "½"
-                }
-                for _ in 0..<(5-fullStars-(halfStar ? 1 : 0)) {
-                    ratingText += "☆"
-                }
-                ratingText += " (\(rating)/5)"
-                self.ratingLabel.text = ratingText
+                self.ratingLabel.text = "⭐️ \(TextMessage.rating): \(rating)/5"
                 self.ratingLabel.isHidden = false
+                print(rating)
+                self.cosmosView.rating = rating
             } else {
                 self.ratingLabel.isHidden = true
             }
             
             // Warranty with conditional display
             if let warranty = product.warrantyInformation, !warranty.isEmpty {
-                self.warrantyLabel.text = "🔒 Warranty: " + warranty
+                self.warrantyLabel.text = "🔒 \(TextMessage.warranty): " + warranty
                 self.warrantyLabel.isHidden = false
             } else {
                 self.warrantyLabel.isHidden = true
@@ -258,7 +259,7 @@ class ProductDetailsViewController: UIViewController {
             
             // Shipping with conditional display
             if let shipping = product.shippingInformation, !shipping.isEmpty {
-                self.shippingLabel.text = "🚚 Shipping: " + shipping
+                self.shippingLabel.text = "🚚 \(TextMessage.shipping): " + shipping
                 self.shippingLabel.isHidden = false
             } else {
                 self.shippingLabel.isHidden = true
@@ -266,7 +267,7 @@ class ProductDetailsViewController: UIViewController {
             
             // Returns with conditional display
             if let returns = product.returnPolicy, !returns.isEmpty {
-                self.returnsLabel.text = "↩️ Returns: " + returns
+                self.returnsLabel.text = "↩️ \(TextMessage.returns): " + returns
                 self.returnsLabel.isHidden = false
             } else {
                 self.returnsLabel.isHidden = true
@@ -274,7 +275,7 @@ class ProductDetailsViewController: UIViewController {
             
             // Tags with conditional display
             if let tags = product.tags, !tags.isEmpty {
-                self.tagsLabel.text = "🏷️ Tags: " + tags.map { "• \($0)" }.joined(separator: " ")
+                self.tagsLabel.text = "🏷️ \(TextMessage.tags): " + tags.map { "• \($0)" }.joined(separator: " ")
                 self.tagsLabel.isHidden = false
             } else {
                 self.tagsLabel.isHidden = true
@@ -311,38 +312,47 @@ class ProductDetailsViewController: UIViewController {
     @IBAction private func addToCartTapped() {
         guard let product = beautyProductDetails else { return }
         
-        // Add haptic feedback
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.impactOccurred()
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         
-        // Show quantity selector
-        let alert = UIAlertController(
-            title: "Select Quantity",
-            message: "How many items would you like to add to cart?",
-            preferredStyle: .alert
-        )
-        
+        let alert = UIAlertController(title: TextMessage.selectQuantity, message: TextMessage.howManyItemsAddToCart, preferredStyle: .alert)
         alert.addTextField { textField in
             textField.keyboardType = .numberPad
             textField.text = "1"
         }
         
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Add to Cart", style: .default) { [weak self] _ in
-            guard let quantity = Int(alert.textFields?.first?.text ?? "1") else { return }
-            self?.cartManager.addToCart(product: product, quantity: quantity)
+        alert.addAction(UIAlertAction(title: TextMessage.cancel, style: .cancel))
+        
+        alert.addAction(UIAlertAction(title: TextMessage.addToCart, style: .default) { [weak self] _ in
+            guard let self = self,
+                  let quantityText = alert.textFields?.first?.text,
+                  let quantity = Int(quantityText),
+                  quantity > 0 else {
+                AlertViewManager.showAlert(title: TextMessage.invalidQuantity, message: TextMessage.enterValidNumber)
+                return
+            }
             
-            // Show success message
-            let successAlert = UIAlertController(
-                title: "Added to Cart",
-                message: "\(quantity) item(s) added to your cart",
-                preferredStyle: .alert
-            )
-            successAlert.addAction(UIAlertAction(title: "Continue Shopping", style: .default))
-            successAlert.addAction(UIAlertAction(title: "View Cart", style: .default) { [weak self] _ in
-                self?.showCart()
+            let totalStock = product.stock ?? 0
+            let alreadyInCart = self.cartDataManager.getQuantityForProduct(product.id ?? 0)
+            let availableStock = totalStock - alreadyInCart
+            
+            guard availableStock > 0 else {
+                AlertViewManager.showAlert(title: TextMessage.stockUnavailable, message: TextMessage.allAvailableStockInYourCart)
+                return
+            }
+            
+            if quantity > availableStock {
+                AlertViewManager.showAlert(title: TextMessage.stockLimitExceeded, message: "You can only add \(availableStock) more item(s) to the cart.")
+                return
+            }
+            
+            self.cartDataManager.addProductToCart(product, quantity: quantity)
+            
+            let successAlert = UIAlertController(title: TextMessage.addToCart, message: "\(quantity) item(s) added to your cart", preferredStyle: .alert)
+            successAlert.addAction(UIAlertAction(title: TextMessage.continueShopping, style: .default))
+            successAlert.addAction(UIAlertAction(title: TextMessage.viewCart, style: .default) { _ in
+                self.showCart()
             })
-            self?.present(successAlert, animated: true)
+            self.present(successAlert, animated: true)
         })
         
         present(alert, animated: true)
@@ -351,16 +361,14 @@ class ProductDetailsViewController: UIViewController {
     @IBAction private func buyNowTapped() {
         guard let product = beautyProductDetails else { return }
         
-        // Add haptic feedback
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.impactOccurred()
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         
-        // Clear cart and add this item
-        cartManager.clearCart()
-        cartManager.addToCart(product: product)
+        cartDataManager.clearCart()
+        cartDataManager.addProductToCart(product, quantity: 1)
         
-        // Show cart/checkout screen
-        showCart()
+        DispatchQueue.main.async {
+            self.showCart()
+        }
     }
     
     @IBAction private func cartButtonTapped() {

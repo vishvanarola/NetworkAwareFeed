@@ -91,7 +91,6 @@ final class BeautyProductDataManager {
             
             do {
                 let result = try managedContext.fetch(fetchRequest)
-                print("Result = \(result)")
                 for data in result {
                     let product = BeautyProducts(
                         id: data.value(forKey: "id") as? Int,
@@ -122,7 +121,6 @@ final class BeautyProductDataManager {
             }
         }
         
-        print("\n\nData\n\(beautyProducts)\n\n")
         return beautyProducts
     }
     

@@ -104,9 +104,7 @@ class BeautyProductCollectionViewCell: UICollectionViewCell {
                         self.activityIndicator.stopAnimating()
                     })
                     
-                    print("Loaded offline image for product \(id) from URL: \(imgUrl)")
                 } else {
-                    print("No cached image found for product \(id) from URL: \(imgUrl)")
                     imgView.image = UIImage(systemName: "photo.fill")
                     activityIndicator.stopAnimating()
                     
