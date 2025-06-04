@@ -18,9 +18,10 @@ class ProductDetailsViewController: UIViewController {
     @IBOutlet weak var categoryLabel: UILabel!
     @IBOutlet weak var priceLabel: UILabel!
     @IBOutlet weak var discountLabel: UILabel!
-    @IBOutlet weak var stockLabel: UILabel!
+    @IBOutlet weak var onlyLeftLabel: UILabel!
     @IBOutlet weak var stockHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var availabilityLabel: UILabel!
+    @IBOutlet weak var stockLabel: UILabel!
     @IBOutlet weak var minOrderLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var weightLabel: UILabel!
@@ -73,12 +74,12 @@ class ProductDetailsViewController: UIViewController {
         discountLabel.textAlignment = .center
         
         // Style stock label
-        stockLabel.backgroundColor = .systemRed.withAlphaComponent(0.1)
-        stockLabel.textColor = .systemRed
-        stockLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
-        stockLabel.layer.cornerRadius = 8
-        stockLabel.layer.masksToBounds = true
-        stockLabel.textAlignment = .center
+        onlyLeftLabel.backgroundColor = .systemRed.withAlphaComponent(0.1)
+        onlyLeftLabel.textColor = .systemRed
+        onlyLeftLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        onlyLeftLabel.layer.cornerRadius = 8
+        onlyLeftLabel.layer.masksToBounds = true
+        onlyLeftLabel.textAlignment = .center
         
         // Description styling
         descriptionLabel.font = UIFont.systemFont(ofSize: 15, weight: .regular)
@@ -86,9 +87,7 @@ class ProductDetailsViewController: UIViewController {
         descriptionLabel.numberOfLines = 0
         
         // Style info labels
-        let infoLabels = [brandLabel, categoryLabel, availabilityLabel, minOrderLabel, 
-                          weightLabel, ratingLabel, warrantyLabel, shippingLabel, 
-                          returnsLabel, tagsLabel]
+        let infoLabels = [brandLabel, categoryLabel, availabilityLabel, stockLabel, minOrderLabel, weightLabel, ratingLabel, warrantyLabel, shippingLabel, returnsLabel, tagsLabel]
         
         for label in infoLabels {
             label?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
@@ -137,10 +136,10 @@ class ProductDetailsViewController: UIViewController {
         self.listCollectionView.showsHorizontalScrollIndicator = false
         
         // Add a shadow to the collection view
-        listCollectionView.layer.shadowColor = UIColor.black.cgColor
-        listCollectionView.layer.shadowOffset = CGSize(width: 0, height: 2)
-        listCollectionView.layer.shadowOpacity = 0.1
-        listCollectionView.layer.shadowRadius = 6
+        self.listCollectionView.layer.shadowColor = UIColor.black.cgColor
+        self.listCollectionView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        self.listCollectionView.layer.shadowOpacity = 0.1
+        self.listCollectionView.layer.shadowRadius = 6
         
         self.listCollectionView.register(
             UINib(nibName: ProductCollectionViewCell.identifier, bundle: nil),
@@ -198,23 +197,23 @@ class ProductDetailsViewController: UIViewController {
             
             // Stock status
             let stockValue = product.stock ?? 0
-            self.stockLabel.isHidden = stockValue >= 10
+            self.onlyLeftLabel.isHidden = stockValue >= 10
             self.stockHeightConstraint.constant = stockValue >= 10 ? 0 : 26
             if stockValue < 10 && stockValue > 0 {
-                self.stockLabel.text = "  Only \(stockValue) left in stock!  "
+                self.onlyLeftLabel.text = "  Only \(stockValue) left in stock!  "
             } else if stockValue == 0 {
-                self.stockLabel.text = "  \(TextMessage.outOfStock)!  "
-                self.stockLabel.isHidden = false
+                self.onlyLeftLabel.text = "  \(TextMessage.outOfStock)!  "
+                self.onlyLeftLabel.isHidden = false
                 self.stockHeightConstraint.constant = 26
             }
             
             // Availability status with conditional display
             if let availability = product.availabilityStatus, !availability.isEmpty {
-                self.availabilityLabel.text = "📦 \(TextMessage.status): " + availability
-                self.availabilityLabel.textColor = availability.contains("In") ? .systemGreen : .systemRed
-                self.availabilityLabel.isHidden = false
+                self.stockLabel.text = "📦 \(TextMessage.status): " + availability
+                self.stockLabel.textColor = availability.contains("In") ? .systemGreen : .systemRed
+                self.stockLabel.isHidden = false
             } else {
-                self.availabilityLabel.isHidden = true
+                self.stockLabel.isHidden = true
             }
             
             // Min order quantity with conditional display

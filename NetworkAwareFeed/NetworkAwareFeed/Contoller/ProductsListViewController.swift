@@ -26,30 +26,6 @@ class ProductsListViewController: UIViewController {
         setupUI()
         configureTableView()
         initializeProductData()
-        configureNavigationBar()
-    }
-    
-    // Configure navigation bar appearance
-    private func configureNavigationBar() {
-        // Ensure the navigation bar is always configured correctly
-        if let navigationController = navigationController {
-            // Set up large title appearance
-            navigationController.navigationBar.prefersLargeTitles = true
-            navigationItem.largeTitleDisplayMode = .always
-            
-            // Style the navigation bar
-            if #available(iOS 15.0, *) {
-                let appearance = UINavigationBarAppearance()
-                appearance.configureWithOpaqueBackground()
-                appearance.backgroundColor = .systemBackground
-                appearance.titleTextAttributes = [.foregroundColor: UIColor.label]
-                appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
-                
-                navigationController.navigationBar.standardAppearance = appearance
-                navigationController.navigationBar.scrollEdgeAppearance = appearance
-                navigationController.navigationBar.compactAppearance = appearance
-            }
-        }
     }
     
     // MARK: - UI Setup
@@ -276,26 +252,10 @@ class ProductsListViewController: UIViewController {
 extension ProductsListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let count = self.viewModel.numberOfProducts
-        
-        // Show empty state if needed
-        if count == 0 {
-            let emptyLabel = UILabel(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: tableView.bounds.height))
-            emptyLabel.text = TextMessage.noProductsPullDown
-            emptyLabel.textAlignment = .center
-            emptyLabel.textColor = .systemGray
-            emptyLabel.numberOfLines = 0
-            emptyLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-            tableView.backgroundView = emptyLabel
-        } else {
-            tableView.backgroundView = nil
-        }
-        
-        return count
+        return self.viewModel.numberOfProducts
     }
     
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ProductTableViewCell.identifier, for: indexPath) as? ProductTableViewCell else {
             return UITableViewCell()
         }
@@ -306,10 +266,6 @@ extension ProductsListViewController: UITableViewDataSource, UITableViewDelegate
                        price: "$\(product.price ?? 0.0)", id: product.id ?? 0)
         
         return cell
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 110 // Consistent cell height
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

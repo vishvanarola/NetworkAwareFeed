@@ -426,7 +426,7 @@
                     </view>
                     <connections>
                         <outlet property="addToCartButton" destination="ErH-iH-GfY" id="Q44-kv-xwg"/>
-                        <outlet property="availabilityLabel" destination="f20-qg-WNu" id="lgW-ZE-Waq"/>
+                        <outlet property="availabilityLabel" destination="TNP-OI-DOo" id="YU8-cm-sDQ"/>
                         <outlet property="brandLabel" destination="lsv-pZ-QRg" id="xoM-qL-mQ4"/>
                         <outlet property="buyNowButton" destination="t9Y-df-L1z" id="vgP-0T-iyk"/>
                         <outlet property="categoryLabel" destination="Ply-8D-jUr" id="3ny-e6-ryW"/>
@@ -436,6 +436,7 @@
                         <outlet property="headingLabel" destination="4bt-E2-yxI" id="v4a-Sc-lwI"/>
                         <outlet property="listCollectionView" destination="wzD-bN-EQA" id="BTU-NY-EmX"/>
                         <outlet property="minOrderLabel" destination="zPH-uz-rS2" id="JnF-v5-HRJ"/>
+                        <outlet property="onlyLeftLabel" destination="3wO-aW-Lbj" id="ZdF-kd-0WD"/>
                         <outlet property="pageControl" destination="t6a-pM-B1f" id="hXr-Cq-kZY"/>
                         <outlet property="priceLabel" destination="YhQ-NQ-Am7" id="Gwt-pP-0dv"/>
                         <outlet property="ratingLabel" destination="6zf-bu-cmt" id="EHx-2k-BHE"/>
@@ -444,7 +445,7 @@
                         <outlet property="reviewsButton" destination="gmK-SC-QcM" id="qcE-7K-f4A"/>
                         <outlet property="shippingLabel" destination="7F3-lN-gYw" id="KSP-ED-zvM"/>
                         <outlet property="stockHeightConstraint" destination="cp2-c8-RA1" id="RUE-gp-rx0"/>
-                        <outlet property="stockLabel" destination="3wO-aW-Lbj" id="3ct-Je-Tac"/>
+                        <outlet property="stockLabel" destination="f20-qg-WNu" id="lIF-Nw-1Rj"/>
                         <outlet property="tagsLabel" destination="igq-mH-S2Q" id="AA5-na-n00"/>
                         <outlet property="warrantyLabel" destination="ZDn-xU-bEF" id="rP3-PN-hRD"/>
                         <outlet property="weightLabel" destination="Th9-94-Tcz" id="DWm-ZM-4wo"/>

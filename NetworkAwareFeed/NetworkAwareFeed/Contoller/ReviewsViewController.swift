@@ -19,12 +19,18 @@ class ReviewsViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupUI()
         setupTableView()
         DispatchQueue.main.asyncAfter(deadline: .now()) {
-            // Suppose this is the loaded data
             self.reviewsData = self.fetchedData
             self.reloadTableWithAnimation()
         }
+    }
+    
+    // MARK: - UI Setup
+    private func setupUI() {
+        // Setup the view
+        view.backgroundColor = .systemBackground
     }
     
     private func setupTableView() {
