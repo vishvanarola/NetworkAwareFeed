@@ -12,7 +12,8 @@ class CartViewController: UIViewController {
     // MARK: - IBOutlets
     @IBOutlet weak var listTableView: UITableView!
     @IBOutlet weak var checkoutButton: UIButton!
-    @IBOutlet weak var emptyCartLabel: UILabel!
+    @IBOutlet weak var emptyCartView: UIView!
+    @IBOutlet weak var continueShoppingButton: UIButton!
     
     // MARK: - Properties
     private let cartDataManager = CartDataManager()
@@ -40,6 +41,14 @@ class CartViewController: UIViewController {
     // MARK: - UI Setup
     private func setupUI() {
         checkoutButton.layer.cornerRadius = 12
+        continueShoppingButton.layer.cornerRadius = 12
+        emptyCartView.backgroundColor = .systemBackground
+        emptyCartView.layer.cornerRadius = 12
+        emptyCartView.clipsToBounds = false
+        emptyCartView.layer.shadowColor = UIColor.black.cgColor
+        emptyCartView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        emptyCartView.layer.shadowOpacity = 0.1
+        emptyCartView.layer.shadowRadius = 4
         updateUI()
     }
     
@@ -52,7 +61,7 @@ class CartViewController: UIViewController {
     }
     
     private func updateUI(_ cases: Int = 2) {
-        emptyCartLabel.isHidden = !cartItems.isEmpty
+        emptyCartView.isHidden = !cartItems.isEmpty
         checkoutButton.isHidden = cartItems.isEmpty
         
         let total = cartItems.reduce(0) { $0 + (($1.product.price ?? 0) * Double($1.quantity)) }
@@ -84,6 +93,17 @@ class CartViewController: UIViewController {
         AlertViewManager.showAlert(title: TextMessage.checkout, message: "\(TextMessage.totalAmount): $\(totalFormatted)\n\(TextMessage.proceedWithPayment)?", alertButtonTypes: [.Cancel, .Proceed], alertStyle: .alert) { alertType in
             if alertType == .Proceed {
                 self.showOrderConfirmation()
+            }
+        }
+    }
+    
+    @IBAction func continueShoppingButtonTapped(_ sender: UIButton) {
+        if let viewControllers = navigationController?.viewControllers {
+            for vc in viewControllers {
+                if vc is ProductsListViewController {
+                    navigationController?.popToViewController(vc, animated: true)
+                    break
+                }
             }
         }
     }

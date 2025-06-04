@@ -10,6 +10,8 @@ import CoreData
 
 final class ProductDataManager {
     
+    private let entityName = "QuantroProduct"
+    
     // Helper function to safely perform work on the main thread
     private func performOnMainThread(_ block: () -> Void) {
         if Thread.isMainThread {
@@ -21,8 +23,19 @@ final class ProductDataManager {
         }
     }
     
+    // Convert arrays to Data for Core Data storage
+    private func convertToData<T: Encodable>(_ value: T?) -> Data? {
+        guard let value = value else { return nil }
+        return try? JSONEncoder().encode(value)
+    }
+    
+    // Convert Data back to arrays from Core Data
+    private func convertFromData<T: Decodable>(_ data: Any?) -> T? {
+        guard let data = data as? Data else { return nil }
+        return try? JSONDecoder().decode(T.self, from: data)
+    }
+    
     func createData(_ productsData: [ProductsData]) {
-        // Move UIApplication.shared.delegate access to main thread
         var appDelegate: AppDelegate?
         
         performOnMainThread {
@@ -32,12 +45,29 @@ final class ProductDataManager {
         guard let appDelegate = appDelegate else { return }
         
         let managedContext = appDelegate.persistentContainer.viewContext
+        managedContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         
         performOnMainThread {
-            let productEntity = NSEntityDescription.entity(forEntityName: entityQuantroProduct, in: managedContext)!
+            // First, delete existing data
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+            let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+            
+            do {
+                try managedContext.execute(deleteRequest)
+            } catch {
+                print("❌ Could not delete existing data: \(error)")
+            }
+            
+            let productEntity = NSEntityDescription.entity(forEntityName: entityName, in: managedContext)!
             
             for productData in productsData {
                 let product = NSManagedObject(entity: productEntity, insertInto: managedContext)
+                
+                // Convert arrays to Data
+                let reviewsData = convertToData(productData.reviews)
+                let tagsData = convertToData(productData.tags)
+                let imagesData = convertToData(productData.images)
+                
                 product.setValue(productData.id, forKey: "id")
                 product.setValue(productData.title, forKey: "title")
                 product.setValue(productData.description, forKey: "desc")
@@ -46,24 +76,25 @@ final class ProductDataManager {
                 product.setValue(productData.discountPercentage, forKey: "discountPercentage")
                 product.setValue(productData.rating, forKey: "rating")
                 product.setValue(productData.stock, forKey: "stock")
-                product.setValue(productData.tags, forKey: "tags")
+                product.setValue(tagsData, forKey: "tags")
                 product.setValue(productData.brand, forKey: "brand")
                 product.setValue(productData.sku, forKey: "sku")
                 product.setValue(productData.weight, forKey: "weight")
                 product.setValue(productData.warrantyInformation, forKey: "warrantyInformation")
                 product.setValue(productData.shippingInformation, forKey: "shippingInformation")
                 product.setValue(productData.availabilityStatus, forKey: "availabilityStatus")
-                product.setValue(productData.reviews, forKey: "reviews")
+                product.setValue(reviewsData, forKey: "reviews")
                 product.setValue(productData.returnPolicy, forKey: "returnPolicy")
                 product.setValue(productData.minimumOrderQuantity, forKey: "minimumOrderQuantity")
-                product.setValue(productData.images, forKey: "images")
+                product.setValue(imagesData, forKey: "images")
                 product.setValue(productData.thumbnail, forKey: "thumbnail")
             }
             
             do {
                 try managedContext.save()
+                print("✅ Successfully saved \(productsData.count) products to Core Data")
             } catch let error as NSError {
-                print("Could not save, \(error), \(error.userInfo)")
+                print("❌ Could not save to Core Data: \(error), \(error.userInfo)")
             }
         }
         
@@ -77,7 +108,6 @@ final class ProductDataManager {
         var products: [ProductsData] = []
         var appDelegate: AppDelegate?
         
-        // Get app delegate on main thread
         performOnMainThread {
             appDelegate = UIApplication.shared.delegate as? AppDelegate
         }
@@ -86,13 +116,17 @@ final class ProductDataManager {
         
         let managedContext = appDelegate.persistentContainer.viewContext
         
-        // Perform Core Data fetch on main thread
         performOnMainThread {
-            let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entityQuantroProduct)
+            let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entityName)
             
             do {
                 let result = try managedContext.fetch(fetchRequest)
                 for data in result {
+                    // Convert Data back to arrays
+                    let reviews: [ReviewsData]? = convertFromData(data.value(forKey: "reviews"))
+                    let tags: [String]? = convertFromData(data.value(forKey: "tags"))
+                    let images: [String]? = convertFromData(data.value(forKey: "images"))
+                    
                     let product = ProductsData(
                         id: data.value(forKey: "id") as? Int,
                         title: data.value(forKey: "title") as? String,
@@ -102,24 +136,24 @@ final class ProductDataManager {
                         discountPercentage: data.value(forKey: "discountPercentage") as? Double,
                         rating: data.value(forKey: "rating") as? Double,
                         stock: data.value(forKey: "stock") as? Int,
-                        tags: data.value(forKey: "tags") as? [String],
+                        tags: tags,
                         brand: data.value(forKey: "brand") as? String,
                         sku: data.value(forKey: "sku") as? String,
                         weight: data.value(forKey: "weight") as? Int,
                         warrantyInformation: data.value(forKey: "warrantyInformation") as? String,
                         shippingInformation: data.value(forKey: "shippingInformation") as? String,
                         availabilityStatus: data.value(forKey: "availabilityStatus") as? String,
-                        reviews: data.value(forKey: "reviews") as? [ReviewsData],
+                        reviews: reviews,
                         returnPolicy: data.value(forKey: "returnPolicy") as? String,
                         minimumOrderQuantity: data.value(forKey: "minimumOrderQuantity") as? Int,
-                        images: data.value(forKey: "images") as? [String],
+                        images: images,
                         thumbnail: data.value(forKey: "thumbnail") as? String
                     )
                     products.append(product)
                 }
-                
+                print("✅ Successfully retrieved \(products.count) products from Core Data")
             } catch {
-                print("error fetching data")
+                print("❌ Error fetching from Core Data: \(error)")
             }
         }
         
@@ -140,7 +174,7 @@ final class ProductDataManager {
         
         // Perform Core Data operations on main thread
         performOnMainThread {
-            let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entityQuantroProduct)
+            let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entityName)
             
             do {
                 let existingProducts = try managedContext.fetch(fetchRequest)
@@ -151,7 +185,7 @@ final class ProductDataManager {
                     let targetProduct = existingProducts.first(where: {
                         ($0.value(forKey: "id") as? Int) == productId
                     }) ?? {
-                        let entity = NSEntityDescription.entity(forEntityName: entityQuantroProduct, in: managedContext)!
+                        let entity = NSEntityDescription.entity(forEntityName: entityName, in: managedContext)!
                         let newProduct = NSManagedObject(entity: entity, insertInto: managedContext)
                         newProduct.setValue(productId, forKey: "id")
                         return newProduct
@@ -205,7 +239,7 @@ final class ProductDataManager {
         
         // Perform Core Data operations on main thread
         performOnMainThread {
-            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityQuantroProduct)
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
             
             let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
             

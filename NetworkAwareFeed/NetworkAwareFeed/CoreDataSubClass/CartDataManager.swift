@@ -15,34 +15,71 @@ final class CartDataManager {
         (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext
     }
     
+    // Convert arrays to NSArray for Core Data storage
+    private func convertArrayToNSObject(_ array: [Any]?) -> NSObject? {
+        return array as NSObject?
+    }
+    
     // MARK: - Add Product to Cart
     func addProductToCart(_ productData: ProductsData, quantity: Int = 1) {
         guard let context = context else { return }
         
         context.perform {
-            let fetchRequest: NSFetchRequest<CartProduct> = CartProduct.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "product.id == %d", productData.id ?? 0)
+            // First check if the product exists in Core Data
+            let productFetch: NSFetchRequest<QuantroProduct> = QuantroProduct.fetchRequest()
+            productFetch.predicate = NSPredicate(format: "id == %d", productData.id ?? 0)
             
             do {
-                if let existingCartItem = try context.fetch(fetchRequest).first {
+                let existingProducts = try context.fetch(productFetch)
+                let quantroProduct: QuantroProduct
+                
+                if let existingProduct = existingProducts.first {
+                    quantroProduct = existingProduct
+                } else {
+                    // Create new product if it doesn't exist
+                    quantroProduct = QuantroProduct(context: context)
+                    quantroProduct.id = Int64(productData.id ?? 0)
+                    quantroProduct.title = productData.title
+                    quantroProduct.desc = productData.description
+                    quantroProduct.category = productData.category
+                    quantroProduct.price = productData.price ?? 0.0
+                    quantroProduct.discountPercentage = productData.discountPercentage ?? 0.0
+                    quantroProduct.rating = productData.rating ?? 0.0
+                    quantroProduct.stock = Int64(productData.stock ?? 0)
+                    quantroProduct.brand = productData.brand
+                    quantroProduct.sku = productData.sku
+                    quantroProduct.weight = Int64(productData.weight ?? 0)
+                    quantroProduct.warrantyInformation = productData.warrantyInformation
+                    quantroProduct.shippingInformation = productData.shippingInformation
+                    quantroProduct.availabilityStatus = productData.availabilityStatus
+                    quantroProduct.returnPolicy = productData.returnPolicy
+                    quantroProduct.minimumOrderQuantity = Int64(productData.minimumOrderQuantity ?? 0)
+                    quantroProduct.thumbnail = productData.thumbnail
+                    
+                    // Convert arrays to NSObject
+                    quantroProduct.tags = self.convertArrayToNSObject(productData.tags)
+                    quantroProduct.reviews = self.convertArrayToNSObject(productData.reviews)
+                    quantroProduct.images = self.convertArrayToNSObject(productData.images)
+                    
+                    try context.save()
+                }
+                
+                // Now check if the product is already in cart
+                let cartFetch: NSFetchRequest<CartProduct> = CartProduct.fetchRequest()
+                cartFetch.predicate = NSPredicate(format: "product.id == %d", productData.id ?? 0)
+                
+                if let existingCartItem = try context.fetch(cartFetch).first {
                     existingCartItem.quantity += Int64(quantity)
                 } else {
-                    let productFetch: NSFetchRequest<QuantroProduct> = QuantroProduct.fetchRequest()
-                    productFetch.predicate = NSPredicate(format: "id == %d", productData.id ?? 0)
-                    
-                    guard let existingProduct = try context.fetch(productFetch).first else {
-                        print("Product not found in Core Data. Ensure it's saved before adding to cart.")
-                        return
-                    }
-                    
                     let cartItem = CartProduct(context: context)
                     cartItem.quantity = Int64(quantity)
-                    cartItem.product = existingProduct
+                    cartItem.product = quantroProduct
                 }
                 
                 try context.save()
+                print("✅ Successfully added product to cart")
             } catch {
-                print("Failed to add product to cart: \(error.localizedDescription)")
+                print("❌ Failed to add product to cart: \(error.localizedDescription)")
             }
         }
     }
@@ -86,8 +123,9 @@ final class CartDataManager {
                         items.append((product, Int(item.quantity)))
                     }
                 }
+                print("✅ Successfully retrieved \(items.count) cart items")
             } catch {
-                print("Failed to retrieve cart items: \(error.localizedDescription)")
+                print("❌ Failed to retrieve cart items: \(error.localizedDescription)")
             }
         }
         
