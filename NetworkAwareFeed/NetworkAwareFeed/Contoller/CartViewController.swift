@@ -13,6 +13,8 @@ class CartViewController: UIViewController {
     @IBOutlet weak var listTableView: UITableView!
     @IBOutlet weak var checkoutButton: UIButton!
     @IBOutlet weak var emptyCartView: UIView!
+    @IBOutlet weak var ohhHoLabel: UILabel!
+    @IBOutlet weak var cartEmptyLabel: UILabel!
     @IBOutlet weak var continueShoppingButton: UIButton!
     
     // MARK: - Properties
@@ -62,6 +64,8 @@ class CartViewController: UIViewController {
     
     private func updateUI(_ cases: Int = 2) {
         emptyCartView.isHidden = !cartItems.isEmpty
+        ohhHoLabel.isHidden = !cartItems.isEmpty
+        cartEmptyLabel.isHidden = !cartItems.isEmpty
         checkoutButton.isHidden = cartItems.isEmpty
         
         let total = cartItems.reduce(0) { $0 + (($1.product.price ?? 0) * Double($1.quantity)) }

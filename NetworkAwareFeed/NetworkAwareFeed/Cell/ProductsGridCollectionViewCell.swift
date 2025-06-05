@@ -1,14 +1,14 @@
 //
-//  ProductTableViewCell.swift
+//  ProductsGridCollectionViewCell.swift
 //  NetworkAwareFeed
 //
-//  Created by apple on 27/05/25.
+//  Created by apple on 04/06/25.
 //
 
 import UIKit
 import SDWebImage
 
-class ProductTableViewCell: UITableViewCell {
+class ProductsGridCollectionViewCell: UICollectionViewCell {
     
     //MARK: - IBOutlets
     @IBOutlet weak var mainView: UIView!
@@ -17,7 +17,7 @@ class ProductTableViewCell: UITableViewCell {
     @IBOutlet weak var priceLabel: UILabel!
     
     //MARK: - Properties
-    static let identifier = "ProductTableViewCell"
+    static let identifier = "ProductsGridCollectionViewCell"
     
     //MARK: - Life cycle
     override func awakeFromNib() {
@@ -25,22 +25,9 @@ class ProductTableViewCell: UITableViewCell {
         setupUI()
     }
     
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        animateSelection(selected)
-    }
-    
-    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
-        super.setHighlighted(highlighted, animated: animated)
-        UIView.animate(withDuration: 0.2) {
-            self.mainView.transform = highlighted ? CGAffineTransform(scaleX: 0.98, y: 0.98) : .identity
-        }
-    }
-    
     //MARK: - UI Setup
     private func setupUI() {
         // Cell configuration
-        self.selectionStyle = .none
         self.contentView.backgroundColor = .clear
         
         // Main view styling
@@ -67,18 +54,6 @@ class ProductTableViewCell: UITableViewCell {
         
         self.priceLabel.textColor = .systemBlue
         self.priceLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
-    }
-    
-    private func animateSelection(_ selected: Bool) {
-        if selected {
-            UIView.animate(withDuration: 0.2, animations: {
-                self.mainView.backgroundColor = UIColor.systemGray6
-            })
-        } else {
-            UIView.animate(withDuration: 0.2, animations: {
-                self.mainView.backgroundColor = .systemBackground
-            })
-        }
     }
     
     //MARK: - Set up Data

@@ -11,6 +11,7 @@ class ProductsListViewController: UIViewController {
     
     //MARK: - IBOutlets
     @IBOutlet weak var listTableView: UITableView!
+    @IBOutlet weak var listCollectionView: UICollectionView!
     
     // MARK: - Properties
     private let viewModel = ProductsListViewModel()
@@ -24,8 +25,8 @@ class ProductsListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        configureTableView()
         initializeProductData()
+        configureSegment()
     }
     
     // MARK: - UI Setup
@@ -114,13 +115,29 @@ class ProductsListViewController: UIViewController {
         self.listTableView.scrollIndicatorInsets = UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0)
         
         // Cell registration
-        self.listTableView.register(UINib(nibName: ProductTableViewCell.identifier, bundle: nil), forCellReuseIdentifier: ProductTableViewCell.identifier)
+        self.listTableView.register(UINib(nibName: ProductsListTableViewCell.identifier, bundle: nil), forCellReuseIdentifier: ProductsListTableViewCell.identifier)
         
         // Configure pull-to-refresh
         refreshControl.tintColor = .systemBlue
         refreshControl.attributedTitle = NSAttributedString(string: TextMessage.pullToRefresh)
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         listTableView.refreshControl = refreshControl
+    }
+    
+    private func configureCollectionView() {
+        // Collection view styling
+        self.listCollectionView.backgroundColor = .systemBackground
+        self.listCollectionView.delegate = self
+        self.listCollectionView.dataSource = self
+        self.listCollectionView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0)
+        self.listCollectionView.scrollIndicatorInsets = UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0)
+        
+        // Cell registration
+        self.listCollectionView.register(UINib(nibName: ProductsGridCollectionViewCell.identifier, bundle: nil), forCellWithReuseIdentifier: ProductsGridCollectionViewCell.identifier)
+    }
+    
+    private func configureSegment() {
+        self.setUpListGrid("list")
     }
     
     @objc private func refreshData() {
@@ -246,6 +263,40 @@ class ProductsListViewController: UIViewController {
         }
         navigationController?.pushViewController(cartVC, animated: true)
     }
+    
+    @IBAction func segmentListGrid(_ sender: UISegmentedControl) {
+        self.setUpListGrid(sender.selectedSegmentIndex == 0 ? "list" : "grid")
+    }
+    
+    func setUpListGrid(_ type: String) {
+        let duration = 0.3
+        
+        let isSwitchingToList = type == "list"
+        let fromView = isSwitchingToList ? listCollectionView! : listTableView!
+        let toView = isSwitchingToList ? listTableView! : listCollectionView!
+        
+        if isSwitchingToList {
+            configureTableView()
+        } else {
+            configureCollectionView()
+        }
+        
+        toView.transform = CGAffineTransform(translationX: isSwitchingToList ? -view.frame.width : view.frame.width, y: 0)
+        toView.alpha = 0
+        toView.isHidden = false
+        
+        UIView.animate(withDuration: duration, animations: {
+            fromView.transform = CGAffineTransform(translationX: isSwitchingToList ? self.view.frame.width : -self.view.frame.width, y: 0)
+            fromView.alpha = 0
+            
+            toView.transform = .identity
+            toView.alpha = 1
+        }, completion: { _ in
+            fromView.isHidden = true
+            fromView.transform = .identity
+            toView.isHidden = false
+        })
+    }
 }
 
 //MARK: - Table View Delegate & Data Source
@@ -256,7 +307,7 @@ extension ProductsListViewController: UITableViewDataSource, UITableViewDelegate
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ProductTableViewCell.identifier, for: indexPath) as? ProductTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ProductsListTableViewCell.identifier, for: indexPath) as? ProductsListTableViewCell else {
             return UITableViewCell()
         }
         
@@ -269,6 +320,37 @@ extension ProductsListViewController: UITableViewDataSource, UITableViewDelegate
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // Add haptic feedback on selection
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+        
+        guard let nav: ProductDetailsViewController = UIStoryboard(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "ProductDetailsViewController") as? ProductDetailsViewController else { return }
+        nav.productDetails = self.viewModel.product(at: indexPath.row)
+        self.navigationController?.pushViewController(nav, animated: true)
+    }
+}
+
+//MARK: - Collection View Delegate & Data Source
+extension ProductsListViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return self.viewModel.numberOfProducts
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = self.listCollectionView.dequeueReusableCell(withReuseIdentifier: ProductsGridCollectionViewCell.identifier, for: indexPath) as! ProductsGridCollectionViewCell
+        let product = self.viewModel.product(at: indexPath.row)
+        cell.setUpData(imgUrl: product.thumbnail ?? "",
+                       title: product.title ?? "",
+                       price: "$\(product.price ?? 0.0)", id: product.id ?? 0)
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let cellWidth = collectionView.frame.width/2
+        return CGSize(width: cellWidth, height: cellWidth*1.2)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // Add haptic feedback on selection
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
