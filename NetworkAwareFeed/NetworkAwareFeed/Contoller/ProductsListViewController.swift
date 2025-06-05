@@ -47,7 +47,7 @@ class ProductsListViewController: UIViewController {
         footerView.backgroundColor = .systemBackground
         footerView.layer.shadowColor = UIColor.black.cgColor
         footerView.layer.shadowOpacity = 0.1
-        footerView.layer.shadowOffset = CGSize(width: 0, height: -3) // shadow appears from top
+        footerView.layer.shadowOffset = CGSize(width: 0, height: -3)
         footerView.layer.shadowRadius = 6
         footerView.layer.masksToBounds = false
         
@@ -74,11 +74,10 @@ class ProductsListViewController: UIViewController {
         connectionStatusView.addSubview(connectionStatusLabel)
         
         NSLayoutConstraint.activate([
-            // Place it right below the navigation bar instead of at the top of the safe area
             connectionStatusView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             connectionStatusView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             connectionStatusView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            connectionStatusView.heightAnchor.constraint(equalToConstant: 0), // Initially hidden
+            connectionStatusView.heightAnchor.constraint(equalToConstant: 0),
             
             connectionStatusLabel.topAnchor.constraint(equalTo: connectionStatusView.topAnchor),
             connectionStatusLabel.leadingAnchor.constraint(equalTo: connectionStatusView.leadingAnchor, constant: 10),
@@ -99,7 +98,7 @@ class ProductsListViewController: UIViewController {
             // Show or hide with animation
             UIView.animate(withDuration: 0.3) {
                 let constraint = self.connectionStatusView.constraints.first { $0.firstAttribute == .height }
-                constraint?.constant = isConnected ? 30 : 30 // Show the bar
+                constraint?.constant = isConnected ? 30 : 30
                 
                 self.view.layoutIfNeeded()
                 
@@ -189,7 +188,7 @@ class ProductsListViewController: UIViewController {
             }
             
             // Move database operations to background thread
-            // Since our dataManager now handles main thread access properly, 
+            // Since our dataManager now handles main thread access properly,
             // we can use a background thread without issues
             DispatchQueue.global(qos: .background).async {
                 let products = self?.viewModel.products ?? [ProductsData]()
@@ -308,6 +307,45 @@ class ProductsListViewController: UIViewController {
     }
     
     @IBAction func sortButtonTapped(_ sender: UIButton) {
+        let alertController = UIAlertController(title: "Sort by", message: nil, preferredStyle: .actionSheet)
+        
+        let nameAZ = UIAlertAction(title: "Name: A to Z", style: .default) { [weak self] _ in
+            self?.viewModel.sort(by: .nameAToZ)
+            self?.reloadViews()
+        }
+        
+        let nameZA = UIAlertAction(title: "Name: Z to A", style: .default) { [weak self] _ in
+            self?.viewModel.sort(by: .nameZToA)
+            self?.reloadViews()
+        }
+        
+        let lowToHigh = UIAlertAction(title: "Price: Low to High", style: .default) { [weak self] _ in
+            self?.viewModel.sort(by: .priceLowToHigh)
+            self?.reloadViews()
+        }
+        
+        let highToLow = UIAlertAction(title: "Price: High to Low", style: .default) { [weak self] _ in
+            self?.viewModel.sort(by: .priceHighToLow)
+            self?.reloadViews()
+        }
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(nameAZ)
+        alertController.addAction(nameZA)
+        alertController.addAction(lowToHigh)
+        alertController.addAction(highToLow)
+        alertController.addAction(cancel)
+        
+        if let popoverController = alertController.popoverPresentationController {
+            popoverController.sourceView = sender
+            popoverController.sourceRect = sender.bounds
+        }
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    @IBAction func filterButtonTapped(_ sender: UIButton) {
         let popoverVC = SortPopoverViewController(products: viewModel.products)
         popoverVC.delegate = self
         popoverVC.modalPresentationStyle = .popover
@@ -322,29 +360,9 @@ class ProductsListViewController: UIViewController {
         self.present(popoverVC, animated: true, completion: nil)
     }
     
-    @IBAction func filterButtonTapped(_ sender: UIButton) {
-        let alertController = UIAlertController(title: "Sort by", message: nil, preferredStyle: .actionSheet)
-        
-        let lowToHigh = UIAlertAction(title: "Price: Low to High", style: .default) { _ in
-            print("Selected Low to High")
-        }
-        
-        let highToLow = UIAlertAction(title: "Price: High to Low", style: .default) { _ in
-            print("Selected High to Low")
-        }
-        
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
-        alertController.addAction(lowToHigh)
-        alertController.addAction(highToLow)
-        alertController.addAction(cancel)
-        
-        if let popoverController = alertController.popoverPresentationController {
-            popoverController.sourceView = sender
-            popoverController.sourceRect = sender.bounds
-        }
-        
-        self.present(alertController, animated: true, completion: nil)
+    private func reloadViews() {
+        listTableView.reloadData()
+        listCollectionView.reloadData()
     }
 }
 
@@ -418,8 +436,8 @@ extension ProductsListViewController: UIPopoverPresentationControllerDelegate {
 }
 
 extension ProductsListViewController: SortPopoverDelegate {
-    
     func didSelectCategory(_ category: String) {
-        print("Selected category: \(category)")
+        viewModel.filterByCategory(category)
+        reloadViews()
     }
 }
