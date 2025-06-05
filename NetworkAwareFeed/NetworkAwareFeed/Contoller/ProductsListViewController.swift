@@ -12,6 +12,7 @@ class ProductsListViewController: UIViewController {
     //MARK: - IBOutlets
     @IBOutlet weak var listTableView: UITableView!
     @IBOutlet weak var listCollectionView: UICollectionView!
+    @IBOutlet weak var footerView: UIView!
     
     // MARK: - Properties
     private let viewModel = ProductsListViewModel()
@@ -20,6 +21,7 @@ class ProductsListViewController: UIViewController {
     private var loadingIndicator: UIActivityIndicatorView!
     private var connectionStatusView: UIView!
     private var connectionStatusLabel: UILabel!
+    private var selectedCategory: String? = nil
     
     //MARK: - Life cycle
     override func viewDidLoad() {
@@ -40,6 +42,14 @@ class ProductsListViewController: UIViewController {
         loadingIndicator.hidesWhenStopped = true
         loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(loadingIndicator)
+        
+        // Footer View Shadow
+        footerView.backgroundColor = .systemBackground
+        footerView.layer.shadowColor = UIColor.black.cgColor
+        footerView.layer.shadowOpacity = 0.1
+        footerView.layer.shadowOffset = CGSize(width: 0, height: -3) // shadow appears from top
+        footerView.layer.shadowRadius = 6
+        footerView.layer.masksToBounds = false
         
         NSLayoutConstraint.activate([
             loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -288,7 +298,6 @@ class ProductsListViewController: UIViewController {
         UIView.animate(withDuration: duration, animations: {
             fromView.transform = CGAffineTransform(translationX: isSwitchingToList ? self.view.frame.width : -self.view.frame.width, y: 0)
             fromView.alpha = 0
-            
             toView.transform = .identity
             toView.alpha = 1
         }, completion: { _ in
@@ -296,6 +305,46 @@ class ProductsListViewController: UIViewController {
             fromView.transform = .identity
             toView.isHidden = false
         })
+    }
+    
+    @IBAction func sortButtonTapped(_ sender: UIButton) {
+        let popoverVC = SortPopoverViewController(products: viewModel.products)
+        popoverVC.delegate = self
+        popoverVC.modalPresentationStyle = .popover
+        
+        if let popoverController = popoverVC.popoverPresentationController {
+            popoverController.sourceView = sender
+            popoverController.sourceRect = sender.bounds
+            popoverController.permittedArrowDirections = [.up, .down]
+            popoverController.delegate = self
+        }
+        
+        self.present(popoverVC, animated: true, completion: nil)
+    }
+    
+    @IBAction func filterButtonTapped(_ sender: UIButton) {
+        let alertController = UIAlertController(title: "Sort by", message: nil, preferredStyle: .actionSheet)
+        
+        let lowToHigh = UIAlertAction(title: "Price: Low to High", style: .default) { _ in
+            print("Selected Low to High")
+        }
+        
+        let highToLow = UIAlertAction(title: "Price: High to Low", style: .default) { _ in
+            print("Selected High to Low")
+        }
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(lowToHigh)
+        alertController.addAction(highToLow)
+        alertController.addAction(cancel)
+        
+        if let popoverController = alertController.popoverPresentationController {
+            popoverController.sourceView = sender
+            popoverController.sourceRect = sender.bounds
+        }
+        
+        self.present(alertController, animated: true, completion: nil)
     }
 }
 
@@ -358,5 +407,19 @@ extension ProductsListViewController: UICollectionViewDelegate, UICollectionView
         guard let nav: ProductDetailsViewController = UIStoryboard(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "ProductDetailsViewController") as? ProductDetailsViewController else { return }
         nav.productDetails = self.viewModel.product(at: indexPath.row)
         self.navigationController?.pushViewController(nav, animated: true)
+    }
+}
+
+// MARK: - Popover presentation delegate
+extension ProductsListViewController: UIPopoverPresentationControllerDelegate {
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
+}
+
+extension ProductsListViewController: SortPopoverDelegate {
+    
+    func didSelectCategory(_ category: String) {
+        print("Selected category: \(category)")
     }
 }

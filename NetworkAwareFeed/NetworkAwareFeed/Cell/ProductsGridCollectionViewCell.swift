@@ -46,6 +46,8 @@ class ProductsGridCollectionViewCell: UICollectionViewCell {
         self.imgView.contentMode = .scaleAspectFill
         self.imgView.layer.cornerRadius = 10
         self.imgView.clipsToBounds = true
+        self.imgView.layer.borderWidth = 0.5
+        self.imgView.layer.borderColor = UIColor.systemGray.cgColor
         
         // Label styling
         self.titleLabel.textColor = .label
