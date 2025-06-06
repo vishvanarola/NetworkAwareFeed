@@ -346,7 +346,7 @@ class ProductsListViewController: UIViewController {
     }
     
     @IBAction func filterButtonTapped(_ sender: UIButton) {
-        let popoverVC = SortPopoverViewController(products: viewModel.products)
+        let popoverVC = FilterPopoverViewController(products: viewModel.products)
         popoverVC.delegate = self
         popoverVC.modalPresentationStyle = .popover
         
@@ -435,7 +435,7 @@ extension ProductsListViewController: UIPopoverPresentationControllerDelegate {
     }
 }
 
-extension ProductsListViewController: SortPopoverDelegate {
+extension ProductsListViewController: FilterPopoverDelegate {
     func didSelectCategory(_ category: String) {
         viewModel.filterByCategory(category)
         reloadViews()

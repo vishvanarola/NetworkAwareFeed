@@ -8,9 +8,9 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SortPopoverViewController" customModule="NetworkAwareFeed" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FilterPopoverViewController" customModule="NetworkAwareFeed" customModuleProvider="target">
             <connections>
-                <outlet property="listTableView" destination="rvM-Ym-hCM" id="TAk-WD-l6x"/>
+                <outlet property="listTableView" destination="Imd-15-MfP" id="AAt-V9-Eil"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -19,7 +19,7 @@
             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="rvM-Ym-hCM">
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Imd-15-MfP">
                     <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                 </tableView>
@@ -27,10 +27,10 @@
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
-                <constraint firstAttribute="bottom" secondItem="rvM-Ym-hCM" secondAttribute="bottom" id="AJF-WP-8jN"/>
-                <constraint firstAttribute="trailing" secondItem="rvM-Ym-hCM" secondAttribute="trailing" id="CVb-0o-dvM"/>
-                <constraint firstItem="rvM-Ym-hCM" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="GVl-Rk-YlM"/>
-                <constraint firstItem="rvM-Ym-hCM" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="ol6-AN-ss9"/>
+                <constraint firstItem="Imd-15-MfP" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="WVr-QY-bft"/>
+                <constraint firstItem="Imd-15-MfP" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="atc-fu-ZkL"/>
+                <constraint firstAttribute="trailing" secondItem="Imd-15-MfP" secondAttribute="trailing" id="psr-h5-HDN"/>
+                <constraint firstAttribute="bottom" secondItem="Imd-15-MfP" secondAttribute="bottom" id="syJ-qC-jxm"/>
             </constraints>
             <point key="canvasLocation" x="-34.351145038167935" y="19.718309859154932"/>
         </view>

@@ -1,24 +1,24 @@
 //
-//  SortPopoverViewController.swift
+//  FilterPopoverViewController.swift
 //  NetworkAwareFeed
 //
-//  Created by apple on 05/06/25.
+//  Created by apple on 06/06/25.
 //
 
 import UIKit
 
-protocol SortPopoverDelegate: AnyObject {
+protocol FilterPopoverDelegate: AnyObject {
     func didSelectCategory(_ category: String)
 }
 
-class SortPopoverViewController: UIViewController {
+class FilterPopoverViewController: UIViewController {
     
     //MARK: - IBOutlets
     @IBOutlet weak var listTableView: UITableView!
     
     // MARK: - Properties
     private var categoryData = [String]()
-    weak var delegate: SortPopoverDelegate?
+    weak var delegate: FilterPopoverDelegate?
     
     // MARK: - Initializer
     init(products: [ProductsData]) {
@@ -26,7 +26,7 @@ class SortPopoverViewController: UIViewController {
         var categories = Array(uniqueCategories).sorted()
         categories.insert("All", at: 0)  // Add "All" at the beginning
         self.categoryData = categories
-        super.init(nibName: "SortPopoverViewController", bundle: nil)
+        super.init(nibName: "FilterPopoverViewController", bundle: nil)
     }
     
     required init?(coder: NSCoder) {
@@ -68,7 +68,7 @@ class SortPopoverViewController: UIViewController {
 }
 
 //MARK: - Table View Delegate & Data Source
-extension SortPopoverViewController: UITableViewDataSource, UITableViewDelegate {
+extension FilterPopoverViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.categoryData.count

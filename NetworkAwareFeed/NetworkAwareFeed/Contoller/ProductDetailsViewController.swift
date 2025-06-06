@@ -244,7 +244,6 @@ class ProductDetailsViewController: UIViewController {
             if let rating = product.rating, rating > 0 {
                 self.ratingLabel.text = "⭐️ \(TextMessage.rating): \(rating)/5"
                 self.ratingLabel.isHidden = false
-                print(rating)
                 self.cosmosView.rating = rating
             } else {
                 self.ratingLabel.isHidden = true
