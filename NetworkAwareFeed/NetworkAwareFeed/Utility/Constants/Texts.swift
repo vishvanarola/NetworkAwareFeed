@@ -5,6 +5,7 @@
 //  Created by apple on 27/05/25.
 //
 
+//MARK: - Text Messages Enum
 enum TextMessage {
     static let alert = "Alert"
     static let pleaseCheckInternet = "Please check your internet connection"
@@ -44,4 +45,10 @@ enum TextMessage {
     static let stockLimitExceeded = "Stock Limit Exceeded"
     static let continueShopping = "Continue Shopping"
     static let viewCart = "View Cart"
+}
+
+//MARK: - Entity Name Enum
+enum EntityName {
+    static let quantro = "QuantroProduct"
+    static let cart = "CartProduct"
 }

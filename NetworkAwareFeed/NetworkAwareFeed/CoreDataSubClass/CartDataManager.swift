@@ -10,33 +10,23 @@ import CoreData
 
 final class CartDataManager {
     
-    // MARK: - Shared Context
-    private var context: NSManagedObjectContext? {
-        (UIApplication.shared.delegate as? AppDelegate)?.persistentContainer.viewContext
-    }
-    
-    // Convert arrays to NSArray for Core Data storage
-    private func convertArrayToNSObject(_ array: [Any]?) -> NSObject? {
-        return array as NSObject?
-    }
+    // MARK: - Singleton Instance
+    static let shared = CartDataManager()
+    private init() {}
     
     // MARK: - Add Product to Cart
     func addProductToCart(_ productData: ProductsData, quantity: Int = 1) {
-        guard let context = context else { return }
+        let context = CoreDataManager.shared.newBackgroundContext()
         
         context.perform {
-            // First check if the product exists in Core Data
-            let productFetch: NSFetchRequest<QuantroProduct> = QuantroProduct.fetchRequest()
-            productFetch.predicate = NSPredicate(format: "id == %d", productData.id ?? 0)
-            
             do {
-                let existingProducts = try context.fetch(productFetch)
-                let quantroProduct: QuantroProduct
+                let productFetch: NSFetchRequest<QuantroProduct> = QuantroProduct.fetchRequest()
+                productFetch.predicate = NSPredicate(format: "id == %d", productData.id ?? 0)
                 
-                if let existingProduct = existingProducts.first {
+                let quantroProduct: QuantroProduct
+                if let existingProduct = try context.fetch(productFetch).first {
                     quantroProduct = existingProduct
                 } else {
-                    // Create new product if it doesn't exist
                     quantroProduct = QuantroProduct(context: context)
                     quantroProduct.id = Int64(productData.id ?? 0)
                     quantroProduct.title = productData.title
@@ -55,16 +45,11 @@ final class CartDataManager {
                     quantroProduct.returnPolicy = productData.returnPolicy
                     quantroProduct.minimumOrderQuantity = Int64(productData.minimumOrderQuantity ?? 0)
                     quantroProduct.thumbnail = productData.thumbnail
-                    
-                    // Convert arrays to NSObject
-                    quantroProduct.tags = self.convertArrayToNSObject(productData.tags)
-                    quantroProduct.reviews = self.convertArrayToNSObject(productData.reviews)
-                    quantroProduct.images = self.convertArrayToNSObject(productData.images)
-                    
-                    try context.save()
+                    quantroProduct.tags = productData.tags as NSObject?
+                    quantroProduct.reviews = productData.reviews as NSObject?
+                    quantroProduct.images = productData.images as NSObject?
                 }
                 
-                // Now check if the product is already in cart
                 let cartFetch: NSFetchRequest<CartProduct> = CartProduct.fetchRequest()
                 cartFetch.predicate = NSPredicate(format: "product.id == %d", productData.id ?? 0)
                 
@@ -76,7 +61,7 @@ final class CartDataManager {
                     cartItem.product = quantroProduct
                 }
                 
-                try context.save()
+                CoreDataManager.shared.saveContext(context: context)
                 print("✅ Successfully added product to cart")
             } catch {
                 print("❌ Failed to add product to cart: \(error.localizedDescription)")
@@ -85,44 +70,15 @@ final class CartDataManager {
     }
     
     // MARK: - Retrieve Cart Items
-    func getCartItems() -> [(product: ProductsData, quantity: Int)] {
-        guard let context = context else { return [] }
-        
-        var items: [(ProductsData, Int)] = []
+    func getCartItems() -> [CartProduct] {
+        let context = CoreDataManager.shared.mainContext
+        var items: [CartProduct] = []
         
         context.performAndWait {
             let fetchRequest: NSFetchRequest<CartProduct> = CartProduct.fetchRequest()
             
             do {
-                let cartItems = try context.fetch(fetchRequest)
-                
-                for item in cartItems {
-                    if let p = item.product {
-                        let product = ProductsData(
-                            id: Int(p.id),
-                            title: p.title,
-                            description: p.desc,
-                            category: p.category,
-                            price: p.price,
-                            discountPercentage: p.discountPercentage,
-                            rating: p.rating,
-                            stock: Int(p.stock),
-                            tags: p.tags as? [String],
-                            brand: p.brand,
-                            sku: p.sku,
-                            weight: Int(p.weight),
-                            warrantyInformation: p.warrantyInformation,
-                            shippingInformation: p.shippingInformation,
-                            availabilityStatus: p.availabilityStatus,
-                            reviews: p.reviews as? [ReviewsData],
-                            returnPolicy: p.returnPolicy,
-                            minimumOrderQuantity: Int(p.minimumOrderQuantity),
-                            images: p.images as? [String],
-                            thumbnail: p.thumbnail
-                        )
-                        items.append((product, Int(item.quantity)))
-                    }
-                }
+                items = try context.fetch(fetchRequest)
                 print("✅ Successfully retrieved \(items.count) cart items")
             } catch {
                 print("❌ Failed to retrieve cart items: \(error.localizedDescription)")
@@ -134,7 +90,7 @@ final class CartDataManager {
     
     // MARK: - Update Quantity for a Product in Cart
     func updateQuantity(productId: Int, quantity: Int, completion: @escaping () -> Void) {
-        guard let context = context else { return completion() }
+        let context = CoreDataManager.shared.newBackgroundContext()
         
         context.perform {
             let fetchRequest: NSFetchRequest<CartProduct> = CartProduct.fetchRequest()
@@ -143,7 +99,7 @@ final class CartDataManager {
             do {
                 if let cartItem = try context.fetch(fetchRequest).first {
                     cartItem.quantity = Int64(quantity)
-                    try context.save()
+                    CoreDataManager.shared.saveContext(context: context)
                 }
                 completion()
             } catch {
@@ -155,7 +111,7 @@ final class CartDataManager {
     
     // MARK: - Remove Product from Cart
     func removeProductFromCart(productId: Int) {
-        guard let context = context else { return }
+        let context = CoreDataManager.shared.newBackgroundContext()
         
         context.perform {
             let fetchRequest: NSFetchRequest<CartProduct> = CartProduct.fetchRequest()
@@ -166,7 +122,8 @@ final class CartDataManager {
                 for item in items {
                     context.delete(item)
                 }
-                try context.save()
+                CoreDataManager.shared.saveContext(context: context)
+                print("✅ Successfully removed product from cart")
             } catch {
                 print("Failed to remove product from cart: \(error.localizedDescription)")
             }
@@ -175,7 +132,7 @@ final class CartDataManager {
     
     // MARK: - Clear Entire Cart
     func clearCart() {
-        guard let context = context else { return }
+        let context = CoreDataManager.shared.newBackgroundContext()
         
         context.perform {
             let fetchRequest: NSFetchRequest<NSFetchRequestResult> = CartProduct.fetchRequest()
@@ -183,7 +140,8 @@ final class CartDataManager {
             
             do {
                 try context.execute(deleteRequest)
-                try context.save()
+                CoreDataManager.shared.saveContext(context: context)
+                print("✅ Successfully cleared entire cart")
             } catch {
                 print("Failed to clear cart: \(error.localizedDescription)")
             }
@@ -192,9 +150,9 @@ final class CartDataManager {
     
     // MARK: - Get Quantity for a Product Already in Cart
     func getQuantityForProduct(_ productId: Int) -> Int {
-        guard let context = context else { return 0 }
-        
+        let context = CoreDataManager.shared.mainContext
         var result: Int = 0
+        
         context.performAndWait {
             let fetchRequest: NSFetchRequest<CartProduct> = CartProduct.fetchRequest()
             fetchRequest.predicate = NSPredicate(format: "product.id == %d", productId)

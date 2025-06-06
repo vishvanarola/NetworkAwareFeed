@@ -18,8 +18,9 @@ class CartViewController: UIViewController {
     @IBOutlet weak var continueShoppingButton: UIButton!
     
     // MARK: - Properties
-    private let cartDataManager = CartDataManager()
-    private var cartItems: [(product: ProductsData, quantity: Int)] = []
+    private let cartDataManager = CartDataManager.shared
+//    private var cartItems: [(product: ProductsData, quantity: Int)] = []
+    private var cartItems: [CartProduct] = []
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -68,7 +69,7 @@ class CartViewController: UIViewController {
         cartEmptyLabel.isHidden = !cartItems.isEmpty
         checkoutButton.isHidden = cartItems.isEmpty
         
-        let total = cartItems.reduce(0) { $0 + (($1.product.price ?? 0) * Double($1.quantity)) }
+        let total = cartItems.reduce(0) { $0 + (($1.product?.price ?? 0) * Double($1.quantity)) }
         let totalFormatted = String(format: "%.2f", total)
         let newTitle = "\(TextMessage.proceedToCheckout) ($\(totalFormatted))"
         
@@ -91,7 +92,7 @@ class CartViewController: UIViewController {
     }
     
     @IBAction func checkoutButtonTapped(_ sender: UIButton) {
-        let total = cartItems.reduce(0) { $0 + (($1.product.price ?? 0) * Double($1.quantity)) }
+        let total = cartItems.reduce(0) { $0 + (($1.product?.price ?? 0) * Double($1.quantity)) }
         let totalFormatted = String(format: "%.2f", total)
                 
         AlertViewManager.showAlert(title: TextMessage.checkout, message: "\(TextMessage.totalAmount): $\(totalFormatted)\n\(TextMessage.proceedWithPayment)?", alertButtonTypes: [.Cancel, .Proceed], alertStyle: .alert) { alertType in
@@ -129,7 +130,7 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CartItemTableViewCell.identifier, for: indexPath) as! CartItemTableViewCell
         let item = cartItems[indexPath.row]
-        cell.configure(with: item.product, quantity: item.quantity)
+        cell.configure(with: item)
         cell.delegate = self
         return cell
     }
@@ -140,12 +141,10 @@ extension CartViewController: CartItemCellDelegate {
     func cartItemCell(_ cell: CartItemTableViewCell, didUpdateQuantity quantity: Int, caseUpdate: Int) {
         guard let indexPath = listTableView.indexPath(for: cell) else { return }
         let item = cartItems[indexPath.row]
-
-        cartDataManager.updateQuantity(productId: item.product.id ?? 0, quantity: quantity) { [weak self] in
+        cartDataManager.updateQuantity(productId: Int(item.product?.id ?? 0), quantity: quantity) { [weak self] in
             guard let self = self else { return }
-
             DispatchQueue.main.async {
-                self.cartItems = self.cartDataManager.getCartItems()
+                self.cartItems[indexPath.row].quantity = Int64(quantity)
                 self.listTableView.reloadRows(at: [indexPath], with: .automatic)
                 self.updateUI(caseUpdate)
             }
@@ -155,7 +154,7 @@ extension CartViewController: CartItemCellDelegate {
     func cartItemCellDidTapRemove(_ cell: CartItemTableViewCell) {
         guard let indexPath = listTableView.indexPath(for: cell) else { return }
         let item = cartItems[indexPath.row]
-        cartDataManager.removeProductFromCart(productId: item.product.id ?? 0)
+        cartDataManager.removeProductFromCart(productId: Int(item.product?.id ?? 0))
         cartItems.remove(at: indexPath.row)
         listTableView.deleteRows(at: [indexPath], with: .fade)
         updateUI()

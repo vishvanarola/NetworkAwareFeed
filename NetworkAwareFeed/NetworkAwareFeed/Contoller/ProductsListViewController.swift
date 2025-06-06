@@ -16,7 +16,7 @@ class ProductsListViewController: UIViewController {
     
     // MARK: - Properties
     private let viewModel = ProductsListViewModel()
-    private let dataManager = ProductDataManager()
+    private let dataManager = ProductDataManager.shared
     private let refreshControl = UIRefreshControl()
     private var loadingIndicator: UIActivityIndicatorView!
     private var connectionStatusView: UIView!

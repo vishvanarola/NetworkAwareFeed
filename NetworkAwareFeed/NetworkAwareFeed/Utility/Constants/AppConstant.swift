@@ -16,6 +16,4 @@ let SCREEN = UIScreen.main.bounds
 let SCREEN_WIDTH = UIScreen.main.bounds.size.width
 let SCREEN_HEIGHT = UIScreen.main.bounds.size.height
 
-let entityQuantroProduct = "QuantroProduct"
-
 let yellowColor = UIColor.init(rgb: 0xFEBE00)

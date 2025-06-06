@@ -39,7 +39,7 @@ class ProductDetailsViewController: UIViewController {
     // MARK: - Properties
     var productDetails: ProductsData?
     private lazy var scrollViewGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleCollectionViewTap))
-    private let cartDataManager = CartDataManager()
+    private let cartDataManager = CartDataManager.shared
     
     //MARK: - Life cycle
     override func viewDidLoad() {

@@ -10,285 +10,191 @@ import CoreData
 
 final class ProductDataManager {
     
-    private let entityName = "QuantroProduct"
+    // MARK: - Singleton Instance
+    static let shared = ProductDataManager()
+    private init() {}
     
-    // Helper function to safely perform work on the main thread
-    private func performOnMainThread(_ block: () -> Void) {
-        if Thread.isMainThread {
-            block()
-        } else {
-            DispatchQueue.main.sync {
-                block()
-            }
-        }
-    }
-    
-    // Convert arrays to Data for Core Data storage
-    private func convertToData<T: Encodable>(_ value: T?) -> Data? {
-        guard let value = value else { return nil }
-        return try? JSONEncoder().encode(value)
-    }
-    
-    // Convert Data back to arrays from Core Data
-    private func convertFromData<T: Decodable>(_ data: Any?) -> T? {
-        guard let data = data as? Data else { return nil }
-        return try? JSONDecoder().decode(T.self, from: data)
-    }
-    
+    // MARK: - Create / Save Products
     func createData(_ productsData: [ProductsData]) {
-        var appDelegate: AppDelegate?
+        let context = CoreDataManager.shared.newBackgroundContext()
         
-        performOnMainThread {
-            appDelegate = UIApplication.shared.delegate as? AppDelegate
-        }
-        
-        guard let appDelegate = appDelegate else { return }
-        
-        let managedContext = appDelegate.persistentContainer.viewContext
-        managedContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        
-        performOnMainThread {
-            // First, delete existing data
-            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
-            let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-            
+        context.perform {
             do {
-                try managedContext.execute(deleteRequest)
-            } catch {
-                print("❌ Could not delete existing data: \(error)")
-            }
-            
-            let productEntity = NSEntityDescription.entity(forEntityName: entityName, in: managedContext)!
-            
-            for productData in productsData {
-                let product = NSManagedObject(entity: productEntity, insertInto: managedContext)
+                // First delete existing data
+                let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: EntityName.quantro)
+                let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+                try context.execute(deleteRequest)
                 
-                // Convert arrays to Data
-                let reviewsData = convertToData(productData.reviews)
-                let tagsData = convertToData(productData.tags)
-                let imagesData = convertToData(productData.images)
+                // Insert new products
+                for productData in productsData {
+                    let product = QuantroProduct(context: context)
+                    product.id = Int64(productData.id ?? 0)
+                    product.title = productData.title
+                    product.desc = productData.description
+                    product.category = productData.category
+                    product.price = productData.price ?? 0.0
+                    product.discountPercentage = productData.discountPercentage ?? 0.0
+                    product.rating = productData.rating ?? 0.0
+                    product.stock = Int64(productData.stock ?? 0)
+                    product.tags = productData.tags as NSObject?
+                    product.brand = productData.brand
+                    product.sku = productData.sku
+                    product.weight = Int64(productData.weight ?? 0)
+                    product.warrantyInformation = productData.warrantyInformation
+                    product.shippingInformation = productData.shippingInformation
+                    product.availabilityStatus = productData.availabilityStatus
+                    product.reviews = productData.reviews as NSObject?
+                    product.returnPolicy = productData.returnPolicy
+                    product.minimumOrderQuantity = Int64(productData.minimumOrderQuantity ?? 0)
+                    product.images = productData.images as NSObject?
+                    product.thumbnail = productData.thumbnail
+                }
                 
-                product.setValue(productData.id, forKey: "id")
-                product.setValue(productData.title, forKey: "title")
-                product.setValue(productData.description, forKey: "desc")
-                product.setValue(productData.category, forKey: "category")
-                product.setValue(productData.price, forKey: "price")
-                product.setValue(productData.discountPercentage, forKey: "discountPercentage")
-                product.setValue(productData.rating, forKey: "rating")
-                product.setValue(productData.stock, forKey: "stock")
-                product.setValue(tagsData, forKey: "tags")
-                product.setValue(productData.brand, forKey: "brand")
-                product.setValue(productData.sku, forKey: "sku")
-                product.setValue(productData.weight, forKey: "weight")
-                product.setValue(productData.warrantyInformation, forKey: "warrantyInformation")
-                product.setValue(productData.shippingInformation, forKey: "shippingInformation")
-                product.setValue(productData.availabilityStatus, forKey: "availabilityStatus")
-                product.setValue(reviewsData, forKey: "reviews")
-                product.setValue(productData.returnPolicy, forKey: "returnPolicy")
-                product.setValue(productData.minimumOrderQuantity, forKey: "minimumOrderQuantity")
-                product.setValue(imagesData, forKey: "images")
-                product.setValue(productData.thumbnail, forKey: "thumbnail")
-            }
-            
-            do {
-                try managedContext.save()
+                // Save context
+                CoreDataManager.shared.saveContext(context: context)
                 print("✅ Successfully saved \(productsData.count) products to Core Data")
-            } catch let error as NSError {
-                print("❌ Could not save to Core Data: \(error), \(error.userInfo)")
+            } catch {
+                print("❌ Could not create products: \(error.localizedDescription)")
             }
-        }
-        
-        // Do image downloading outside of the main thread
-        for product in productsData {
-            downloadAndCacheImages(for: product)
         }
     }
     
+    // MARK: - Retrieve Products
     func retrieveData() -> [ProductsData] {
+        let context = CoreDataManager.shared.mainContext
         var products: [ProductsData] = []
-        var appDelegate: AppDelegate?
         
-        performOnMainThread {
-            appDelegate = UIApplication.shared.delegate as? AppDelegate
-        }
-        
-        guard let appDelegate = appDelegate else { return [] }
-        
-        let managedContext = appDelegate.persistentContainer.viewContext
-        
-        performOnMainThread {
-            let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entityName)
+        context.performAndWait {
+            let fetchRequest: NSFetchRequest<QuantroProduct> = QuantroProduct.fetchRequest()
             
             do {
-                let result = try managedContext.fetch(fetchRequest)
-                for data in result {
-                    // Convert Data back to arrays
-                    let reviews: [ReviewsData]? = convertFromData(data.value(forKey: "reviews"))
-                    let tags: [String]? = convertFromData(data.value(forKey: "tags"))
-                    let images: [String]? = convertFromData(data.value(forKey: "images"))
-                    
+                let result = try context.fetch(fetchRequest)
+                for p in result {
                     let product = ProductsData(
-                        id: data.value(forKey: "id") as? Int,
-                        title: data.value(forKey: "title") as? String,
-                        description: data.value(forKey: "desc") as? String,
-                        category: data.value(forKey: "category") as? String,
-                        price: data.value(forKey: "price") as? Double,
-                        discountPercentage: data.value(forKey: "discountPercentage") as? Double,
-                        rating: data.value(forKey: "rating") as? Double,
-                        stock: data.value(forKey: "stock") as? Int,
-                        tags: tags,
-                        brand: data.value(forKey: "brand") as? String,
-                        sku: data.value(forKey: "sku") as? String,
-                        weight: data.value(forKey: "weight") as? Int,
-                        warrantyInformation: data.value(forKey: "warrantyInformation") as? String,
-                        shippingInformation: data.value(forKey: "shippingInformation") as? String,
-                        availabilityStatus: data.value(forKey: "availabilityStatus") as? String,
-                        reviews: reviews,
-                        returnPolicy: data.value(forKey: "returnPolicy") as? String,
-                        minimumOrderQuantity: data.value(forKey: "minimumOrderQuantity") as? Int,
-                        images: images,
-                        thumbnail: data.value(forKey: "thumbnail") as? String
+                        id: Int(p.id),
+                        title: p.title,
+                        description: p.desc,
+                        category: p.category,
+                        price: p.price,
+                        discountPercentage: p.discountPercentage,
+                        rating: p.rating,
+                        stock: Int(p.stock),
+                        tags: p.tags as? [String],
+                        brand: p.brand,
+                        sku: p.sku,
+                        weight: Int(p.weight),
+                        warrantyInformation: p.warrantyInformation,
+                        shippingInformation: p.shippingInformation,
+                        availabilityStatus: p.availabilityStatus,
+                        reviews: p.reviews as? [ReviewsData],
+                        returnPolicy: p.returnPolicy,
+                        minimumOrderQuantity: Int(p.minimumOrderQuantity),
+                        images: p.images as? [String],
+                        thumbnail: p.thumbnail
                     )
                     products.append(product)
                 }
                 print("✅ Successfully retrieved \(products.count) products from Core Data")
             } catch {
-                print("❌ Error fetching from Core Data: \(error)")
+                print("❌ Failed to retrieve products: \(error.localizedDescription)")
             }
         }
         
         return products
     }
     
-    func updateData(_ products: [ProductsData]) {
-        var appDelegate: AppDelegate?
+    // MARK: - Update Products
+    func updateData(_ productsData: [ProductsData]) {
+        let context = CoreDataManager.shared.newBackgroundContext()
         
-        // Get app delegate on main thread
-        performOnMainThread {
-            appDelegate = UIApplication.shared.delegate as? AppDelegate
-        }
-        
-        guard let appDelegate = appDelegate else { return }
-        
-        let managedContext = appDelegate.persistentContainer.viewContext
-        
-        // Perform Core Data operations on main thread
-        performOnMainThread {
-            let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entityName)
-            
+        context.perform {
             do {
-                let existingProducts = try managedContext.fetch(fetchRequest)
+                let fetchRequest: NSFetchRequest<QuantroProduct> = QuantroProduct.fetchRequest()
+                let existingProducts = try context.fetch(fetchRequest)
                 
-                for product in products {
-                    let productId = product.id ?? 0
+                for productData in productsData {
+                    let productId = Int64(productData.id ?? 0)
+                    let quantroProduct = existingProducts.first(where: { $0.id == productId }) ?? QuantroProduct(context: context)
                     
-                    let targetProduct = existingProducts.first(where: {
-                        ($0.value(forKey: "id") as? Int) == productId
-                    }) ?? {
-                        let entity = NSEntityDescription.entity(forEntityName: entityName, in: managedContext)!
-                        let newProduct = NSManagedObject(entity: entity, insertInto: managedContext)
-                        newProduct.setValue(productId, forKey: "id")
-                        return newProduct
-                    }()
-                    
-                    targetProduct.setValue(product.title, forKey: "title")
-                    targetProduct.setValue(product.description, forKey: "desc")
-                    targetProduct.setValue(product.category, forKey: "category")
-                    targetProduct.setValue(product.price, forKey: "price")
-                    targetProduct.setValue(product.discountPercentage, forKey: "discountPercentage")
-                    targetProduct.setValue(product.rating, forKey: "rating")
-                    targetProduct.setValue(product.stock, forKey: "stock")
-                    targetProduct.setValue(product.tags, forKey: "tags")
-                    targetProduct.setValue(product.brand, forKey: "brand")
-                    targetProduct.setValue(product.sku, forKey: "sku")
-                    targetProduct.setValue(product.weight, forKey: "weight")
-                    targetProduct.setValue(product.warrantyInformation, forKey: "warrantyInformation")
-                    targetProduct.setValue(product.shippingInformation, forKey: "shippingInformation")
-                    targetProduct.setValue(product.availabilityStatus, forKey: "availabilityStatus")
-                    targetProduct.setValue(product.reviews, forKey: "reviews")
-                    targetProduct.setValue(product.returnPolicy, forKey: "returnPolicy")
-                    targetProduct.setValue(product.minimumOrderQuantity, forKey: "minimumOrderQuantity")
-                    targetProduct.setValue(product.images, forKey: "images")
-                    targetProduct.setValue(product.thumbnail, forKey: "thumbnail")
+                    quantroProduct.id = productId
+                    quantroProduct.title = productData.title
+                    quantroProduct.desc = productData.description
+                    quantroProduct.category = productData.category
+                    quantroProduct.price = productData.price ?? 0.0
+                    quantroProduct.discountPercentage = productData.discountPercentage ?? 0.0
+                    quantroProduct.rating = productData.rating ?? 0.0
+                    quantroProduct.stock = Int64(productData.stock ?? 0)
+                    quantroProduct.tags = productData.tags as NSObject?
+                    quantroProduct.brand = productData.brand
+                    quantroProduct.sku = productData.sku
+                    quantroProduct.weight = Int64(productData.weight ?? 0)
+                    quantroProduct.warrantyInformation = productData.warrantyInformation
+                    quantroProduct.shippingInformation = productData.shippingInformation
+                    quantroProduct.availabilityStatus = productData.availabilityStatus
+                    quantroProduct.reviews = productData.reviews as NSObject?
+                    quantroProduct.returnPolicy = productData.returnPolicy
+                    quantroProduct.minimumOrderQuantity = Int64(productData.minimumOrderQuantity ?? 0)
+                    quantroProduct.images = productData.images as NSObject?
+                    quantroProduct.thumbnail = productData.thumbnail
                 }
                 
-                try managedContext.save()
-                
-            } catch let error as NSError {
-                print("Could not update. \(error), \(error.userInfo)")
+                CoreDataManager.shared.saveContext(context: context)
+                print("✅ Successfully updated \(productsData.count) products")
+            } catch {
+                print("❌ Failed to update products: \(error.localizedDescription)")
             }
-        }
-        
-        // Do image downloading outside of the main thread
-        for product in products {
-            downloadAndCacheImages(for: product)
         }
     }
     
+    // MARK: - Delete All Products
     func deleteData() {
-        var appDelegate: AppDelegate?
+        let context = CoreDataManager.shared.newBackgroundContext()
         
-        // Get app delegate on main thread
-        performOnMainThread {
-            appDelegate = UIApplication.shared.delegate as? AppDelegate
-        }
-        
-        guard let appDelegate = appDelegate else { return }
-        
-        let managedContext = appDelegate.persistentContainer.viewContext
-        
-        // Perform Core Data operations on main thread
-        performOnMainThread {
-            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
-            
+        context.perform {
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: EntityName.quantro)
             let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
             
             do {
-                try managedContext.execute(deleteRequest)
-                try managedContext.save()
-            } catch let error as NSError {
-                print("Could not delete all data. \(error), \(error.userInfo)")
+                try context.execute(deleteRequest)
+                CoreDataManager.shared.saveContext(context: context)
+                print("✅ Successfully deleted all products")
+            } catch {
+                print("❌ Failed to delete products: \(error.localizedDescription)")
             }
         }
     }
     
-    // MARK: - Helper Methods
-    
-    /// Downloads and caches images for a product
-    private func downloadAndCacheImages(for product: ProductsData) {
+    // MARK: - Download & Cache Images (optional utility)
+    func downloadAndCacheImages(for product: ProductsData) {
         let productId = "\(product.id ?? 0)"
         
-        // Cache thumbnail image
+        // Cache thumbnail
         if let thumbnailUrl = product.thumbnail, let url = URL(string: thumbnailUrl) {
             downloadAndCacheImage(url: url, id: productId)
         }
         
-        // Cache all product images with unique keys for each image
+        // Cache product images
         if let images = product.images {
             for (index, urlString) in images.enumerated() {
                 if let url = URL(string: urlString) {
-                    // Explicitly add index information to ensure each image has a unique cache
-                    downloadAndCacheImage(url: url, id: productId)
-                    print("Cached image \(index) for product \(productId): \(urlString)")
+                    downloadAndCacheImage(url: url, id: productId + "_\(index)")
                 }
             }
         }
     }
     
-    /// Downloads and caches a single image asynchronously
     private func downloadAndCacheImage(url: URL, id: String) {
-        // First check if the image is already cached
         if ImageCacheManager.shared.getImage(for: url, id: id) != nil {
-            // Image already cached, no need to download again
+            // Already cached
             return
         }
         
-        // Download asynchronously
-        URLSession.shared.dataTask(with: url) { data, response, error in
+        URLSession.shared.dataTask(with: url) { data, _, error in
             if let data = data, let image = UIImage(data: data) {
                 ImageCacheManager.shared.save(image, for: url, id: id)
+                print("✅ Cached image \(id)")
             } else if let error = error {
-                print("Error downloading image: \(error.localizedDescription)")
+                print("❌ Error downloading image: \(error.localizedDescription)")
             }
         }.resume()
     }

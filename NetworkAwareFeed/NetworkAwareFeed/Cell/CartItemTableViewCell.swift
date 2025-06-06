@@ -83,14 +83,14 @@ class CartItemTableViewCell: UITableViewCell {
     }
     
     // MARK: - Configuration
-    func configure(with product: ProductsData, quantity: Int) {
-        self.quantity = quantity
-        self.stock = product.stock ?? 1
-        titleLabel.text = product.title
-        priceLabel.text = "$\(String(format: "%.2f", (product.price ?? 0) * Double(quantity)))"
-        quantityLabel.text = "\(quantity)"
+    func configure(with cartProduct: CartProduct) {
+        self.quantity = Int(cartProduct.quantity)
+        self.stock = Int(cartProduct.product?.stock ?? 1)
+        self.titleLabel.text = cartProduct.product?.title
+        self.priceLabel.text = "$\(String(format: "%.2f", (cartProduct.product?.price ?? 0) * Double(cartProduct.quantity)))"
+        self.quantityLabel.text = "\(cartProduct.quantity)"
         
-        if let thumbnail = product.thumbnail, let url = URL(string: thumbnail) {
+        if let thumbnail = cartProduct.product?.thumbnail, let url = URL(string: thumbnail) {
             imgView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "photo"))
         } else {
             imgView.image = UIImage(systemName: "photo")
