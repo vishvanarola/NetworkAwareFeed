@@ -7,12 +7,17 @@
 
 import UIKit
 
+enum ProductDisplayType {
+    case list, grid
+}
+
 class ProductsListViewController: UIViewController {
     
     //MARK: - IBOutlets
     @IBOutlet weak var listTableView: UITableView!
     @IBOutlet weak var listCollectionView: UICollectionView!
     @IBOutlet weak var footerView: UIView!
+    @IBOutlet weak var productDisplayTypeButton: UIButton!
     
     // MARK: - Properties
     private let viewModel = ProductsListViewModel()
@@ -22,6 +27,7 @@ class ProductsListViewController: UIViewController {
     private var connectionStatusView: UIView!
     private var connectionStatusLabel: UILabel!
     private var selectedCategory: String? = nil
+    private var productDisplayType: ProductDisplayType = .list
     
     //MARK: - Life cycle
     override func viewDidLoad() {
@@ -146,7 +152,8 @@ class ProductsListViewController: UIViewController {
     }
     
     private func configureSegment() {
-        self.setUpListGrid("list")
+        self.setUpListGrid(.list)
+        self.productDisplayTypeButton.setImage(UIImage(systemName: "square.grid.2x2"), for: .normal)
     }
     
     @objc private func refreshData() {
@@ -273,14 +280,14 @@ class ProductsListViewController: UIViewController {
         navigationController?.pushViewController(cartVC, animated: true)
     }
     
-    @IBAction func segmentListGrid(_ sender: UISegmentedControl) {
-        self.setUpListGrid(sender.selectedSegmentIndex == 0 ? "list" : "grid")
+    @IBAction func listGridButtonTapped(_ sender: UIButton) {
+        self.productDisplayType = self.productDisplayType == .list ? .grid : .list
+        self.productDisplayTypeButton.setImage(UIImage(systemName: self.productDisplayType == .list ? "rectangle.grid.2x2" : "rectangle.grid.1x2"), for: .normal)
+        self.setUpListGrid(self.productDisplayType)
     }
     
-    func setUpListGrid(_ type: String) {
-        let duration = 0.3
-        
-        let isSwitchingToList = type == "list"
+    func setUpListGrid(_ type: ProductDisplayType) {
+        let isSwitchingToList = type == .list
         let fromView = isSwitchingToList ? listCollectionView! : listTableView!
         let toView = isSwitchingToList ? listTableView! : listCollectionView!
         
@@ -290,19 +297,19 @@ class ProductsListViewController: UIViewController {
             configureCollectionView()
         }
         
-        toView.transform = CGAffineTransform(translationX: isSwitchingToList ? -view.frame.width : view.frame.width, y: 0)
+        toView.frame = fromView.frame
+        toView.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
         toView.alpha = 0
         toView.isHidden = false
         
-        UIView.animate(withDuration: duration, animations: {
-            fromView.transform = CGAffineTransform(translationX: isSwitchingToList ? self.view.frame.width : -self.view.frame.width, y: 0)
+        UIView.animate(withDuration: 0.3, animations: {
             fromView.alpha = 0
-            toView.transform = .identity
             toView.alpha = 1
+            toView.transform = .identity
         }, completion: { _ in
             fromView.isHidden = true
+            fromView.alpha = 1
             fromView.transform = .identity
-            toView.isHidden = false
         })
     }
     

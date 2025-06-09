@@ -28,51 +28,61 @@
                                                 <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zDO-jt-qyc">
-                                                <rect key="frame" x="345" y="7.3333333333333286" width="32" height="32"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="32" id="tHW-Uo-NJ3"/>
-                                                    <constraint firstAttribute="width" constant="32" id="tYj-WF-6UK"/>
-                                                </constraints>
-                                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                <state key="normal" image="cart" catalog="system">
-                                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large" weight="semibold"/>
-                                                </state>
-                                                <connections>
-                                                    <action selector="cartButtonTapped" destination="1Zb-5J-WCy" eventType="touchUpInside" id="pjp-cx-aXz"/>
-                                                </connections>
-                                            </button>
+                                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="zm4-aK-aLs">
+                                                <rect key="frame" x="289" y="7.3333333333333286" width="84" height="32"/>
+                                                <subviews>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fSX-nr-q8a">
+                                                        <rect key="frame" x="0.0" y="0.0" width="32" height="32"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="32" id="5qr-km-t5A"/>
+                                                            <constraint firstAttribute="width" constant="32" id="Pth-8z-Y18"/>
+                                                        </constraints>
+                                                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                        <state key="normal" image="square.grid.2x2" catalog="system">
+                                                            <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large" weight="semibold"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="listGridButtonTapped:" destination="1Zb-5J-WCy" eventType="touchUpInside" id="rlF-bk-Uxo"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zDO-jt-qyc">
+                                                        <rect key="frame" x="52" y="0.0" width="32" height="32"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="32" id="tHW-Uo-NJ3"/>
+                                                            <constraint firstAttribute="width" constant="32" id="tYj-WF-6UK"/>
+                                                        </constraints>
+                                                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                        <state key="normal" image="cart" catalog="system">
+                                                            <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large" weight="semibold"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="cartButtonTapped" destination="1Zb-5J-WCy" eventType="touchUpInside" id="pjp-cx-aXz"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                            </stackView>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
+                                            <constraint firstItem="zm4-aK-aLs" firstAttribute="centerY" secondItem="IPO-H2-NEW" secondAttribute="centerY" id="7ax-eb-wfK"/>
+                                            <constraint firstItem="zm4-aK-aLs" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="IPO-H2-NEW" secondAttribute="trailing" constant="5" id="AdS-MF-iKL"/>
                                             <constraint firstItem="IPO-H2-NEW" firstAttribute="leading" secondItem="Y5e-qE-A3O" secondAttribute="leading" constant="20" id="H4G-tU-mpn"/>
                                             <constraint firstAttribute="bottom" secondItem="IPO-H2-NEW" secondAttribute="bottom" constant="10" id="OfC-0c-ma2"/>
                                             <constraint firstItem="IPO-H2-NEW" firstAttribute="top" secondItem="Y5e-qE-A3O" secondAttribute="top" constant="10" id="UH3-AH-t8E"/>
-                                            <constraint firstAttribute="trailing" secondItem="zDO-jt-qyc" secondAttribute="trailing" constant="16" id="Y22-bN-8zs"/>
-                                            <constraint firstItem="zDO-jt-qyc" firstAttribute="centerY" secondItem="IPO-H2-NEW" secondAttribute="centerY" id="rAH-ut-cbW"/>
-                                            <constraint firstItem="zDO-jt-qyc" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="IPO-H2-NEW" secondAttribute="trailing" constant="5" id="utf-Xj-Pvm"/>
+                                            <constraint firstAttribute="trailing" secondItem="zm4-aK-aLs" secondAttribute="trailing" constant="20" id="rhU-Pf-5Yg"/>
                                         </constraints>
                                     </view>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Prm-oU-TPh">
-                                        <rect key="frame" x="16" y="121.33333333333331" width="361" height="32"/>
-                                        <segments>
-                                            <segment title="" image="rectangle.grid.1x2" catalog="system"/>
-                                            <segment title="" image="square.grid.2x2" catalog="system"/>
-                                        </segments>
-                                        <connections>
-                                            <action selector="segmentListGrid:" destination="1Zb-5J-WCy" eventType="valueChanged" id="qmw-bS-Ob9"/>
-                                        </connections>
-                                    </segmentedControl>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="myN-53-ggO">
-                                        <rect key="frame" x="0.0" y="157.33333333333331" width="393" height="612.66666666666674"/>
+                                        <rect key="frame" x="0.0" y="105.33333333333331" width="393" height="664.66666666666674"/>
                                         <subviews>
                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="11K-4x-pU1">
-                                                <rect key="frame" x="0.0" y="0.0" width="393" height="612.66666666666663"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="393" height="664.66666666666663"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                             </tableView>
                                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="uqa-3B-zfF">
-                                                <rect key="frame" x="0.0" y="0.0" width="393" height="612.66666666666663"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="393" height="664.66666666666663"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="C3k-DM-na7">
                                                     <size key="itemSize" width="128" height="128"/>
@@ -251,14 +261,11 @@
                                     <constraint firstAttribute="trailing" secondItem="myN-53-ggO" secondAttribute="trailing" id="CWw-P1-4aJ"/>
                                     <constraint firstItem="myN-53-ggO" firstAttribute="leading" secondItem="ubQ-Nh-lIZ" secondAttribute="leading" id="CoK-5w-rJL"/>
                                     <constraint firstAttribute="bottom" secondItem="260-gK-PA2" secondAttribute="bottom" id="JJA-jO-hM0"/>
-                                    <constraint firstItem="Prm-oU-TPh" firstAttribute="leading" secondItem="ubQ-Nh-lIZ" secondAttribute="leading" constant="16" id="KPn-9x-9dT"/>
-                                    <constraint firstItem="Prm-oU-TPh" firstAttribute="top" secondItem="Y5e-qE-A3O" secondAttribute="bottom" constant="16" id="VxD-jU-Pu1"/>
+                                    <constraint firstItem="myN-53-ggO" firstAttribute="top" secondItem="Y5e-qE-A3O" secondAttribute="bottom" id="VP8-Ad-XGg"/>
                                     <constraint firstItem="260-gK-PA2" firstAttribute="top" secondItem="myN-53-ggO" secondAttribute="bottom" id="ibK-zg-r4U"/>
-                                    <constraint firstItem="myN-53-ggO" firstAttribute="top" secondItem="Prm-oU-TPh" secondAttribute="bottom" constant="5" id="ml2-Ms-fbO"/>
                                     <constraint firstItem="260-gK-PA2" firstAttribute="leading" secondItem="ubQ-Nh-lIZ" secondAttribute="leading" id="oO7-3u-nqC"/>
                                     <constraint firstAttribute="trailing" secondItem="Y5e-qE-A3O" secondAttribute="trailing" id="pI3-fy-GUJ"/>
                                     <constraint firstAttribute="trailing" secondItem="260-gK-PA2" secondAttribute="trailing" id="sd8-OM-zPu"/>
-                                    <constraint firstAttribute="trailing" secondItem="Prm-oU-TPh" secondAttribute="trailing" constant="16" id="x4E-Z0-uWA"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -278,6 +285,7 @@
                         <outlet property="footerView" destination="260-gK-PA2" id="D8b-PE-7CZ"/>
                         <outlet property="listCollectionView" destination="uqa-3B-zfF" id="wgG-Le-7xa"/>
                         <outlet property="listTableView" destination="11K-4x-pU1" id="bLg-4G-zO7"/>
+                        <outlet property="productDisplayTypeButton" destination="fSX-nr-q8a" id="wBk-Wk-LTk"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bHK-au-Ghp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -912,7 +920,6 @@
         <image name="chevron.left" catalog="system" width="97" height="128"/>
         <image name="empty_cart" width="170.66667175292969" height="170.66667175292969"/>
         <image name="line.3.horizontal.decrease" catalog="system" width="128" height="73"/>
-        <image name="rectangle.grid.1x2" catalog="system" width="128" height="100"/>
         <image name="square.grid.2x2" catalog="system" width="128" height="114"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
